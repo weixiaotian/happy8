@@ -7,12 +7,12 @@ import com.happy8.utils.HttpInvokeHelper;
 
 public class TestUser {
 	public static void main(String[] args) {
-		String urlget = "http://localhost:8080/happy8/getuserinfo?userid=13500000000";
-		String urlreg = "http://localhost:8080/happy8/registeruser";
-		String urllupdate = "http://localhost:8080/happy8/setuserinfo";
-		String urllogin = "http://localhost:8080/happy8/userlogin";
-		String urlresetpassword = "http://localhost:8080/happy8/resetpassword";
-		String urllogout = "http://localhost:8080/happy8/logout?userid=13500000000";
+		String urlget = "http://119.254.97.20:8080/happy8/getuserinfo?userid=13500000000";
+		String urlreg = "http://119.254.97.20:8080/happy8/registeruser";
+		String urllupdate = "http://119.254.97.20:8080/happy8/setuserinfo";
+		String urllogin = "http://119.254.97.20:8080/happy8/userlogin";
+		String urlresetpassword = "http://119.254.97.20:8080/happy8/resetpassword";
+		String urllogout = "http://119.254.97.20:8080/happy8/logout?userid=13500000000";
 		try {
 			String resp = "";
 			try{

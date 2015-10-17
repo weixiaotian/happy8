@@ -1,4 +1,4 @@
-package com.happy8.app;
+package com.happy8.app.findbuddy;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -8,15 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
-import com.happy8.args.UserInfoArgs;
-import com.happy8.args.UserPasswordArgs;
+import com.happy8.args.FindBuddyInfoReqArgs;
+import com.happy8.args.FindBuddyInfoRspArgs;
 import com.happy8.dao.Happy8DAO;
 import com.happy8.utils.HttpTools;
 import com.happy8.utils.StringUtils;
 
-public class UserLoginServlet extends HttpServlet {
-	
-	private static Logger log = LoggerFactory.getLogger(UserLoginServlet.class);
+public class FindBuddyInfoServlet extends HttpServlet{
+	private static Logger log = LoggerFactory.getLogger(FindBuddyInfoServlet.class);
 	/**
 	 * 
 	 */
@@ -26,9 +25,9 @@ public class UserLoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response){
 		try{
 			String body = HttpTools.getRequestBody(request);
-			UserPasswordArgs args = null;
+			FindBuddyInfoReqArgs args = null;
 			try{
-				args = JSON.parseObject(body, UserPasswordArgs.class);
+				args = JSON.parseObject(body, FindBuddyInfoReqArgs.class);
 			}catch(Exception ex){
 				log.error("parse error req: "+body, ex);
 				HttpTools.sendResponseOnlyStatusCode(response, 400);
@@ -39,10 +38,20 @@ public class UserLoginServlet extends HttpServlet {
 				HttpTools.sendResponseOnlyStatusCode(response, 400);
 				return;
 			}
-			int statusCode = Happy8DAO.userLogin(args.getUserId(), args.getPassword());
-			HttpTools.sendResponseOnlyStatusCode(response, statusCode);
+			
+			if(StringUtils.isNullOrEmpty(args.getUserId())){
+				log.error("req userid is null");
+				HttpTools.sendResponseOnlyStatusCode(response, 400);
+				return;
+			}
+			
+			long id = Happy8DAO.insertFindBuddyInfo(args.getUserId(), args.getInfoContent());
+			FindBuddyInfoRspArgs res = new FindBuddyInfoRspArgs();
+			res.setBdInfoId(id);
+			HttpTools.sendOkResponse(response, JSON.toJSONString(res));
+			
 		}catch(Exception ex){
-			log.error("UserLoginServlet process error",ex);
+			log.error("FindBuddyInfoServlet process error",ex);
 			HttpTools.sendResponseOnlyStatusCode(response, 500);
 		}
 	}

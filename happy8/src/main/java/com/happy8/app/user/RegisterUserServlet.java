@@ -1,4 +1,4 @@
-package com.happy8.app;
+package com.happy8.app.user;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

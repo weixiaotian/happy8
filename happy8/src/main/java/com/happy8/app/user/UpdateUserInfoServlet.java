@@ -1,4 +1,4 @@
-package com.happy8.app;
+package com.happy8.app.user;
 
 import java.util.ArrayList;
 import java.util.List;

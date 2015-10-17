@@ -1,4 +1,4 @@
-package com.happy8.app;
+package com.happy8.app.user;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -7,15 +7,18 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.fastjson.JSON;
+import com.happy8.args.UserInfoArgs;
+import com.happy8.dao.Happy8DAO;
 import com.happy8.utils.HttpTools;
 import com.happy8.utils.StringUtils;
 
-public class LogoutServlet extends HttpServlet{
+public class GetUserInfoServlet extends HttpServlet{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static Logger log = LoggerFactory.getLogger(LogoutServlet.class);
+	private static Logger log = LoggerFactory.getLogger(GetUserInfoServlet.class);
 	@Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response){
 		try{
@@ -25,9 +28,15 @@ public class LogoutServlet extends HttpServlet{
 				HttpTools.sendResponseOnlyStatusCode(response, 400);
 				return;
 			}
-			HttpTools.sendResponseOnlyStatusCode(response, 200);
+			UserInfoArgs args = Happy8DAO.getUserInfo(userId);
+			if(args == null){
+				log.error("user id is not find " + userId);
+				HttpTools.sendResponseOnlyStatusCode(response, 404);
+				return;
+			}
+			HttpTools.sendOkResponse(response, JSON.toJSONString(args));
 		}catch(Exception ex){
-			log.error("LogoutServlet process error",ex);
+			log.error("GetUserInfoServlet process error",ex);
 			HttpTools.sendResponseOnlyStatusCode(response, 500);
 		}
 	}

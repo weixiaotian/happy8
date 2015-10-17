@@ -10,12 +10,15 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.happy8.app.GetUserInfoServlet;
-import com.happy8.app.LogoutServlet;
-import com.happy8.app.RegisterUserServlet;
-import com.happy8.app.ResetPasswordServlet;
-import com.happy8.app.UpdateUserInfoServlet;
-import com.happy8.app.UserLoginServlet;
+import com.happy8.app.findbuddy.FindBuddyInfoListServlet;
+import com.happy8.app.findbuddy.FindBuddyInfoServlet;
+import com.happy8.app.findbuddy.ReplayFindBuddyInfoServlet;
+import com.happy8.app.user.GetUserInfoServlet;
+import com.happy8.app.user.LogoutServlet;
+import com.happy8.app.user.RegisterUserServlet;
+import com.happy8.app.user.ResetPasswordServlet;
+import com.happy8.app.user.UpdateUserInfoServlet;
+import com.happy8.app.user.UserLoginServlet;
 import com.happy8.dao.Happy8DAO;
 
 public class Happy8HttpService {
@@ -69,6 +72,12 @@ public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.cl
 		context.addServlet(new ServletHolder(new UpdateUserInfoServlet()), "/happy8/setuserinfo");
 		context.addServlet(new ServletHolder(new GetUserInfoServlet()), "/happy8/getuserinfo");
 		context.addServlet(new ServletHolder(new LogoutServlet()), "/happy8/logout");
+		
+		context.addServlet(new ServletHolder(new FindBuddyInfoServlet()), "/happy8/findbuddyinfo");
+		context.addServlet(new ServletHolder(new FindBuddyInfoListServlet()), "/happy8/findbuddyinfolist");
+		context.addServlet(new ServletHolder(new ReplayFindBuddyInfoServlet()), "/happy8/replayfindbuddy");
+		
+		
 		
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(port);
