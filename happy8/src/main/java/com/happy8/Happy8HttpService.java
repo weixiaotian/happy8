@@ -11,6 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.happy8.app.GetUserInfoServlet;
+import com.happy8.app.LogoutServlet;
+import com.happy8.app.RegisterUserServlet;
+import com.happy8.app.ResetPasswordServlet;
+import com.happy8.app.UpdateUserInfoServlet;
 import com.happy8.app.UserLoginServlet;
 import com.happy8.dao.Happy8DAO;
 
@@ -59,8 +63,12 @@ public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.cl
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		context.setContextPath("/");
 		server.setHandler(context);
-		context.addServlet(new ServletHolder(new GetUserInfoServlet()), "/happy8/getuserinfo");
 		context.addServlet(new ServletHolder(new UserLoginServlet()), "/happy8/userlogin");
+		context.addServlet(new ServletHolder(new RegisterUserServlet()), "/happy8/registeruser");
+		context.addServlet(new ServletHolder(new ResetPasswordServlet()), "/happy8/resetpassword");
+		context.addServlet(new ServletHolder(new UpdateUserInfoServlet()), "/happy8/setuserinfo");
+		context.addServlet(new ServletHolder(new GetUserInfoServlet()), "/happy8/getuserinfo");
+		context.addServlet(new ServletHolder(new LogoutServlet()), "/happy8/logout");
 		
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(port);
