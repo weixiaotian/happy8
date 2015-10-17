@@ -1,0 +1,33 @@
+#!/bin/bash
+#chkconfig: 35 90 10
+#description: happy8http-service
+
+monitor_start() {
+ cd /home/happy8
+ java -jar /home/happy8/happy8.jar
+}
+
+monitor_stop() {
+  MPID=`ps axu|grep "happy8.jar"|grep -v grep|awk '{ print $2}'`
+ if [ "$MPID" != "" ];
+  then
+	 echo "kill happy8 http service ( pid =" $MPID ")"
+	 kill -s KILL $MPID
+ fi
+}
+
+monitor_restart(){
+	monitor_stop
+	monitor_start
+}
+monitor_usage() {
+  echo -e "Usage: $0 {start,stop,restart}"
+  exit 1
+}
+
+case "$1" in
+  start) monitor_start ;;
+  stop)  monitor_stop  ;;
+  restart) monitor_restart ;;
+  *)     monitor_usage ;;
+esac
