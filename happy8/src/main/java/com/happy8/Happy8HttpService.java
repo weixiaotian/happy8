@@ -10,6 +10,11 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.happy8.app.club.FavoriteClubListServlet;
+import com.happy8.app.club.NearbyClubListServlet;
+import com.happy8.app.club.ProcessClubServlet;
+import com.happy8.app.club.ProcessFavoriteServlet;
+import com.happy8.app.club.QueryClubListServlet;
 import com.happy8.app.findbuddy.FindBuddyInfoListServlet;
 import com.happy8.app.findbuddy.FindBuddyInfoServlet;
 import com.happy8.app.findbuddy.ReplayFindBuddyInfoServlet;
@@ -85,6 +90,12 @@ public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.cl
 		context.addServlet(new ServletHolder(new TimeLineInfoListServlet()), "/happy8/timelineinfolist");
 		context.addServlet(new ServletHolder(new ReplayTimeLineServlet()), "/happy8/replaytimeline");
 		context.addServlet(new ServletHolder(new DeleteTimeLineServlet()), "/happy8/deletetimeline");
+		
+		context.addServlet(new ServletHolder(new ProcessClubServlet()), "/happy8/processclub");
+		context.addServlet(new ServletHolder(new ProcessFavoriteServlet()), "/happy8/processfavorite");
+		context.addServlet(new ServletHolder(new FavoriteClubListServlet()), "/happy8/favoriteclublist");
+		context.addServlet(new ServletHolder(new QueryClubListServlet()), "/happy8/queryclublist");
+		context.addServlet(new ServletHolder(new NearbyClubListServlet()), "/happy8/nearbyclublist");
 		
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(port);

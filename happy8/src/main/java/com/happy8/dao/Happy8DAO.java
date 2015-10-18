@@ -15,6 +15,7 @@ import tian.database.DataTable;
 import tian.database.Database;
 import tian.database.DatabaseManager;
 
+import com.happy8.args.ClubItem;
 import com.happy8.args.FindBuddyCommentInfo;
 import com.happy8.args.FindBuddyInfoItem;
 import com.happy8.args.TimeLineCommentInfoItem;
@@ -39,6 +40,12 @@ public class Happy8DAO {
 	private static String sqlSelectTimeLineSelfSendList = "select tlinfoid,userid,infocontent from ha_timeline where userid = ? order by tlinfoid desc limit ?,?";
 	private static String sqlSelectTimeLineList = "select b.tlinfoid,b.userid,b.infocontent from ha_usertimeline a,ha_timeline b where a.userid = ? and a.tlinfoid = b.tlinfoid order by a.tlinfoid desc limit ?,?";
 	private static String sqlDeleteClub = "delete from ha_club where clubid = ?";
+	private static String sqlInsertFavoriteClub = "insert into ha_userfavoriteclub(userid,clubid) values(?,?)";
+	private static String sqlDeleteFavoriteClub = "delete from ha_userfavoriteclub where userid = ? and clubid = ?";
+	private static String sqlSelectFavoriteClubList = "select b.clubid,b.ownerid,b.addr,b.sale,b.phone,b.playstyle,b.longitude,b.latitude from ha_userfavoriteclub a,ha_club b where a.userid = ? and a.clubid = b.clubid order by a.clubid desc limit ?,?";
+	private static String sqlQueryClubListByTel = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude from ha_club where phone like ? order by clubid desc limit ?,?";
+	private static String sqlQueryClubListByAddr = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude from ha_club where addr like ? order by clubid desc limit ?,?";
+	private static String sqlQueryClubListByGeoHash = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude from ha_club where geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? order by clubid desc limit ?,?";
 	
 	public static void initialize() throws Exception{
 		Properties p = new Properties();
@@ -396,7 +403,7 @@ public class Happy8DAO {
 			Object []values = { clubId };
 			happy8DB.executeNonQuery(sqlDeleteClub, values);
 		}catch(Exception ex){
-			log.error("deleteTimeLine error", ex);
+			log.error("deleteClub error", ex);
 			throw ex;
 		}
 	}
@@ -408,8 +415,113 @@ public class Happy8DAO {
 				return 200;
 			return 404;
 		}catch(Exception ex){
-			log.error("updateUserInfo error", ex);
+			log.error("updateClub error", ex);
 			throw ex;
 		}
 	}
+	
+	public static void insertFavoriteClub(String userId,int clubId) throws Exception{
+		try{
+			Object []values = {userId, clubId };
+			happy8DB.executeNonQuery(sqlInsertFavoriteClub, values);
+		}catch(Exception ex){
+			log.error("insertFavoriteClub error", ex);
+			throw ex;
+		}
+	}
+	
+	public static void delFavoriteClub(String userId,int clubId) throws Exception{
+		try{
+			Object []values = {userId, clubId };
+			happy8DB.executeNonQuery(sqlDeleteFavoriteClub, values);
+		}catch(Exception ex){
+			log.error("delFavoriteClub error", ex);
+			throw ex;
+		}
+	}
+	
+	public static List<ClubItem> getFavoriteClubList(String userId,int start,int end) throws Exception{
+		try{
+			List<ClubItem> res = new ArrayList<ClubItem>();
+			int count = end - start + 1;
+			Object []values = {userId,start,count};
+			DataTable dt = happy8DB.executeTable(sqlSelectFavoriteClubList, values);
+			for(DataRow dr : dt.getRows()){
+				ClubItem item = new ClubItem();
+				item.setAddr(dr.getString("addr"));
+				item.setClubId(dr.getInt("clubid"));
+				item.setLatitude(dr.getDouble("latitude"));
+				item.setLongitude(dr.getDouble("longitude"));
+				item.setOwnerId(dr.getString("ownerid"));
+				item.setPlayStyle(dr.getString("playstyle"));
+				item.setSale(dr.getDouble("sale"));
+				res.add(item);
+			}
+			return res;
+		}catch(Exception ex){
+			log.error("getTimeLineList error", ex);
+			throw ex;
+		}
+	}
+	
+	public static List<ClubItem> queryClubList(String index,String type,int start,int end) throws Exception{
+		try{
+			List<ClubItem> res = new ArrayList<ClubItem>();
+			int count = end - start + 1;
+			String queryIndex = "%"+index+"%";
+			Object []values = {queryIndex , start , count};
+			String sql = "";
+			if(type.equals("tel")){
+				sql = sqlQueryClubListByTel;
+			}else{
+				sql = sqlQueryClubListByAddr;
+			}
+			DataTable dt = happy8DB.executeTable(sql, values);
+			for(DataRow dr : dt.getRows()){
+				ClubItem item = new ClubItem();
+				item.setAddr(dr.getString("addr"));
+				item.setClubId(dr.getInt("clubid"));
+				item.setLatitude(dr.getDouble("latitude"));
+				item.setLongitude(dr.getDouble("longitude"));
+				item.setOwnerId(dr.getString("ownerid"));
+				item.setPlayStyle(dr.getString("playstyle"));
+				item.setSale(dr.getDouble("sale"));
+				res.add(item);
+			}
+			return res;
+		}catch(Exception ex){
+			log.error("getTimeLineList error", ex);
+			throw ex;
+		}
+	}
+	
+	public static List<ClubItem> getNearByClubList(String[] adjAndgeo,int start,int end) throws Exception{
+		try{
+			List<ClubItem> res = new ArrayList<ClubItem>();
+			int count = end - start + 1;
+			//String queryIndex = geoHash+"%";
+			Object []values = new Object[adjAndgeo.length + 2];
+			for(int i=0;i<adjAndgeo.length;i++){
+				values[i] = adjAndgeo[i]+"%";
+			}
+			values[adjAndgeo.length] = start;
+			values[adjAndgeo.length+1] = end;
+			DataTable dt = happy8DB.executeTable(sqlQueryClubListByGeoHash, values);
+			for(DataRow dr : dt.getRows()){
+				ClubItem item = new ClubItem();
+				item.setAddr(dr.getString("addr"));
+				item.setClubId(dr.getInt("clubid"));
+				item.setLatitude(dr.getDouble("latitude"));
+				item.setLongitude(dr.getDouble("longitude"));
+				item.setOwnerId(dr.getString("ownerid"));
+				item.setPlayStyle(dr.getString("playstyle"));
+				item.setSale(dr.getDouble("sale"));
+				res.add(item);
+			}
+			return res;
+		}catch(Exception ex){
+			log.error("getTimeLineList error", ex);
+			throw ex;
+		}
+	} 
 }

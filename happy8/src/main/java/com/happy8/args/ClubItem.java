@@ -10,7 +10,7 @@ public class ClubItem {
 	private String addr;
 	private String phone;
 	private double sale;
-	private String palyStyle;
+	private String playStyle;
 	private double longitude;
 	private double latitude;
 	public int getClubId() {
@@ -43,11 +43,11 @@ public class ClubItem {
 	public void setSale(double sale) {
 		this.sale = sale;
 	}
-	public String getPalyStyle() {
-		return palyStyle;
+	public String getPlayStyle() {
+		return playStyle;
 	}
-	public void setPalyStyle(String palyStyle) {
-		this.palyStyle = palyStyle;
+	public void setPlayStyle(String playStyle) {
+		this.playStyle = playStyle;
 	}
 	public double getLongitude() {
 		return longitude;
