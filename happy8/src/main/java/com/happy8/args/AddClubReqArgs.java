@@ -8,7 +8,7 @@ public class AddClubReqArgs {
 	private String ownerId;
 	private String addr;
 	private String phone;
-	private String sale;
+	private double sale;
 	private String palyStyle;
 	private double longitude;
 	private double latitude;
@@ -42,10 +42,10 @@ public class AddClubReqArgs {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
-	public String getSale() {
+	public double getSale() {
 		return sale;
 	}
-	public void setSale(String sale) {
+	public void setSale(double sale) {
 		this.sale = sale;
 	}
 	public String getPalyStyle() {

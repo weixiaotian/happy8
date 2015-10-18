@@ -37,7 +37,8 @@ public class Happy8DAO {
 	private static String sqlDeleteTimeLine = "delete from ha_usertimeline where tlinfoid = ?";
 	private static String sqlDeleteUserTimeLine = "delete from ha_usertimeline where userid = ? and tlinfoid = ?";
 	private static String sqlSelectTimeLineSelfSendList = "select tlinfoid,userid,infocontent from ha_timeline where userid = ? order by tlinfoid desc limit ?,?";
-	private static String sqlSelectTimeLineList = "select from b.tlinfoid,b.userid,b.infocontent ha_usertimeline a,ha_timeline b where a.userid = ? and a.tlinfoid = b.tlinfoid order by a.tlinfoid desc limit ?,?";
+	private static String sqlSelectTimeLineList = "select b.tlinfoid,b.userid,b.infocontent from ha_usertimeline a,ha_timeline b where a.userid = ? and a.tlinfoid = b.tlinfoid order by a.tlinfoid desc limit ?,?";
+	private static String sqlDeleteClub = "delete from ha_club where clubid = ?";
 	
 	public static void initialize() throws Exception{
 		Properties p = new Properties();
@@ -374,6 +375,40 @@ public class Happy8DAO {
 			}
 		}catch(Exception ex){
 			log.error("wrapFindBuddyInfoListWithComment error", ex);
+			throw ex;
+		}
+	}
+	
+	public static int insertClub(String ownerId,String addr,String phone,String playStyle,double sale,double longitude,double latitude,String geohash) throws Exception{
+		try{
+			String []params = {"ownerid","addr","phone","playstyle","sale","longitude","latitude","geohash"};
+			Object []values = {ownerId,addr,phone,playStyle,sale,longitude,latitude,geohash};
+			DataTable dt = happy8DB.spExecuteTable("USP_InsertClub", params, values);
+			return dt.getRow(0).getInt(1);
+		}catch(Exception ex){
+			log.error("insertFindBuddyInfo error", ex);
+			throw ex;
+		}
+	}
+	
+	public static void deleteClub(int clubId) throws Exception{
+		try{
+			Object []values = { clubId };
+			happy8DB.executeNonQuery(sqlDeleteClub, values);
+		}catch(Exception ex){
+			log.error("deleteTimeLine error", ex);
+			throw ex;
+		}
+	}
+	
+	public static int updateClub(String sql,Object []values) throws Exception{
+		try{
+			int res = happy8DB.executeNonQuery(sql, values);
+			if(res > 0)
+				return 200;
+			return 404;
+		}catch(Exception ex){
+			log.error("updateUserInfo error", ex);
 			throw ex;
 		}
 	}
