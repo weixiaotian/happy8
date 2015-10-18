@@ -13,6 +13,10 @@ import org.slf4j.LoggerFactory;
 import com.happy8.app.findbuddy.FindBuddyInfoListServlet;
 import com.happy8.app.findbuddy.FindBuddyInfoServlet;
 import com.happy8.app.findbuddy.ReplayFindBuddyInfoServlet;
+import com.happy8.app.timeline.DeleteTimeLineServlet;
+import com.happy8.app.timeline.ReplayTimeLineServlet;
+import com.happy8.app.timeline.TimeLineInfoListServlet;
+import com.happy8.app.timeline.TimeLineInfoServlet;
 import com.happy8.app.user.GetUserInfoServlet;
 import com.happy8.app.user.LogoutServlet;
 import com.happy8.app.user.RegisterUserServlet;
@@ -77,7 +81,10 @@ public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.cl
 		context.addServlet(new ServletHolder(new FindBuddyInfoListServlet()), "/happy8/findbuddyinfolist");
 		context.addServlet(new ServletHolder(new ReplayFindBuddyInfoServlet()), "/happy8/replayfindbuddy");
 		
-		
+		context.addServlet(new ServletHolder(new TimeLineInfoServlet()), "/happy8/timeLineinfo");
+		context.addServlet(new ServletHolder(new TimeLineInfoListServlet()), "/happy8/timelineinfolist");
+		context.addServlet(new ServletHolder(new ReplayTimeLineServlet()), "/happy8/replaytimeline");
+		context.addServlet(new ServletHolder(new DeleteTimeLineServlet()), "/happy8/deletetimeline");
 		
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(port);

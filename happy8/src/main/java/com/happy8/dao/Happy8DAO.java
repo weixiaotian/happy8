@@ -17,6 +17,8 @@ import tian.database.DatabaseManager;
 
 import com.happy8.args.FindBuddyCommentInfo;
 import com.happy8.args.FindBuddyInfoItem;
+import com.happy8.args.TimeLineCommentInfoItem;
+import com.happy8.args.TimeLineInfoItem;
 import com.happy8.args.UserInfoArgs;
 
 public class Happy8DAO {
@@ -29,6 +31,13 @@ public class Happy8DAO {
 	private static String sqlResetPassword = "update ha_user set password = ? where userid = ?";
 	private static String sqlSelectFindBuddyInfoList = "select bdinfoid,userid,infocontent from ha_findbuddyinfo order by bdinfoid desc limit ?,?"; 
 	private static String sqlSelectFindBuddyCommentList = "SELECT commentid,bdinfoid,publishid,commentedid,commenttext FROM ha_findbuddycomment WHERE bdinfoid IN ( ? )";
+	private static String sqlSelectTimeLineCommentList = "SELECT commentid,tlinfoid,publishid,commentedid,commenttext FROM ha_timelinecomment WHERE bdinfoid IN ( ? )";
+	private static String sqlSelectFriendList = "select friendid from ha_friend where userid = ?";
+	private static String sqlInsertUserTimeLine = "insert into ha_usertimeline values(?,?)";
+	private static String sqlDeleteTimeLine = "delete from ha_usertimeline where tlinfoid = ?";
+	private static String sqlDeleteUserTimeLine = "delete from ha_usertimeline where userid = ? and tlinfoid = ?";
+	private static String sqlSelectTimeLineSelfSendList = "select tlinfoid,userid,infocontent from ha_timeline where userid = ? order by tlinfoid desc limit ?,?";
+	private static String sqlSelectTimeLineList = "select from b.tlinfoid,b.userid,b.infocontent ha_usertimeline a,ha_timeline b where a.userid = ? and a.tlinfoid = b.tlinfoid order by a.tlinfoid desc limit ?,?";
 	
 	public static void initialize() throws Exception{
 		Properties p = new Properties();
@@ -204,6 +213,163 @@ public class Happy8DAO {
 			for(FindBuddyInfoItem info : res){
 				if(map.containsKey(info.getBdInfoId())){
 					info.setCommentList(map.get(info.getBdInfoId()));
+				}
+			}
+		}catch(Exception ex){
+			log.error("wrapFindBuddyInfoListWithComment error", ex);
+			throw ex;
+		}
+	}
+	
+	public static List<String> getFriendUserIdList(String userId) throws Exception{
+		List<String> res = new ArrayList<String>();
+		try{
+			Object []values = {userId};
+			DataTable dt = happy8DB.executeTable(sqlSelectFriendList, values);
+			for(DataRow dr : dt.getRows()){
+				res.add(dr.getString("friendid"));
+			}
+			return res;
+		}catch(Exception ex){
+			log.error("insertTimeLineInfo error", ex);
+			throw ex;
+		}
+	}
+	
+	public static long insertTimeLineInfo(String userId,String infoContent) throws Exception{
+		try{
+			String []params = {"userid","infocontent"};
+			Object []values = {userId,infoContent};
+			DataTable dt = happy8DB.spExecuteTable("USP_InsertTimeLineInfo", params, values);
+			return dt.getRow(0).getLong(1);
+		}catch(Exception ex){
+			log.error("insertTimeLineInfo error", ex);
+			throw ex;
+		}
+	}
+	
+	public static void insertUserTimeLine(String userId,long tlInfoId) throws Exception{
+		try{
+			Object []values = {userId,tlInfoId};
+			happy8DB.executeNonQuery(sqlInsertUserTimeLine, values);
+		}catch(Exception ex){
+			log.error("insertTimeLineInfo error", ex);
+			throw ex;
+		}
+	}
+	
+	public static long insertTimeLineComment(long tlInfoId,String publishId,String commentedId,String commentText) throws Exception{
+		try{
+			String []params = {"tlinfoid", "publishid","commentedid","commenttext"};
+			Object []values = {tlInfoId,publishId,commentedId,commentText};
+			DataTable dt = happy8DB.spExecuteTable("USP_InsertTimeLineComment", params, values);
+			return dt.getRow(0).getLong(1);
+		}catch(Exception ex){
+			log.error("insertFindBuddyComment error", ex);
+			throw ex;
+		}
+	}
+	
+	public static int deleteTimeLine(long tlInfoId) throws Exception{
+		try{
+			Object []values = { tlInfoId };
+			return happy8DB.executeNonQuery(sqlDeleteTimeLine, values);
+		}catch(Exception ex){
+			log.error("deleteTimeLine error", ex);
+			throw ex;
+		}
+	}
+	
+	public static void deleteUserTimeLine(String userId,long tlInfoId) throws Exception{
+		try{
+			Object []values = { userId,tlInfoId };
+			happy8DB.executeNonQuery(sqlDeleteUserTimeLine, values);
+		}catch(Exception ex){
+			log.error("deleteUserTimeLine error", ex);
+			throw ex;
+		}
+	}
+	
+	public static List<TimeLineInfoItem> getTimeLineList(String userId,int start,int end) throws Exception{
+		try{
+			List<TimeLineInfoItem> res = new ArrayList<TimeLineInfoItem>();
+			int count = end - start + 1;
+			Object []values = {userId,start,count};
+			DataTable dt = happy8DB.executeTable(sqlSelectTimeLineList, values);
+			for(DataRow dr : dt.getRows()){
+				TimeLineInfoItem item = new TimeLineInfoItem();
+				item.setUserId(dr.getString("userid"));
+				item.setTlInfoId(dr.getLong("tlinfoid"));
+				item.setInfoContent(dr.getString("infocontent"));
+				res.add(item);
+			}
+			if(res.size() > 0){
+				wrapTimeLineInfoListWithComment(res);
+			}
+			return res;
+		}catch(Exception ex){
+			log.error("getTimeLineList error", ex);
+			throw ex;
+		}
+	}
+	
+	public static List<TimeLineInfoItem> getTimeLineSelfSendList(String userId,int start,int end) throws Exception{
+		try{
+			List<TimeLineInfoItem> res = new ArrayList<TimeLineInfoItem>();
+			int count = end - start + 1;
+			Object []values = {userId,start,count};
+			DataTable dt = happy8DB.executeTable(sqlSelectTimeLineSelfSendList, values);
+			for(DataRow dr : dt.getRows()){
+				TimeLineInfoItem item = new TimeLineInfoItem();
+				item.setUserId(dr.getString("userid"));
+				item.setTlInfoId(dr.getLong("tlinfoid"));
+				item.setInfoContent(dr.getString("infocontent"));
+				res.add(item);
+			}
+			if(res.size() > 0){
+				wrapTimeLineInfoListWithComment(res);
+			}
+			return res;
+		}catch(Exception ex){
+			log.error("getTimeLineSelfSendList error", ex);
+			throw ex;
+		}
+	}
+	
+	private static void wrapTimeLineInfoListWithComment(List<TimeLineInfoItem> res) throws Exception{
+		List<Long> infoIds =new ArrayList<Long>();
+		for(TimeLineInfoItem info : res){
+			infoIds.add(info.getTlInfoId());
+		}
+		
+		try{
+			DataTable dt = happy8DB.executeTable(sqlSelectTimeLineCommentList, infoIds.toArray());
+			Map<Long,List<TimeLineCommentInfoItem>> map = new HashMap<Long,List<TimeLineCommentInfoItem>>();
+			for(DataRow dr : dt.getRows()){
+				long tlInfoId = dr.getLong("tlinfoid");
+				long commentId = dr.getLong("commentid");
+				String publishId = dr.getString("publishid");
+				String commentedId = dr.getString("commentedid");
+				String commentText = dr.getString("commenttext");
+				
+				TimeLineCommentInfoItem item = new TimeLineCommentInfoItem();
+				item.setTlInfoId(tlInfoId);
+				item.setCommentedUserId(commentedId);
+				item.setCommentId(commentId);
+				item.setCommentText(commentText);
+				item.setPublishUserId(publishId);
+				if(map.containsKey(tlInfoId)){
+					List<TimeLineCommentInfoItem> list = map.get(tlInfoId);
+					list.add(item);
+				}else{
+					List<TimeLineCommentInfoItem> list = new ArrayList<TimeLineCommentInfoItem>();
+					list.add(item);
+					map.put(tlInfoId, list);
+				}
+			}
+			for(TimeLineInfoItem info : res){
+				if(map.containsKey(info.getTlInfoId())){
+					info.setCommentList(map.get(info.getTlInfoId()));
 				}
 			}
 		}catch(Exception ex){
