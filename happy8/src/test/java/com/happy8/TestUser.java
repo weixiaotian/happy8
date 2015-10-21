@@ -26,8 +26,8 @@ public class TestUser {
 			}
 			try{
 				UserPasswordArgs pwdErrArgs = new UserPasswordArgs();
-				pwdErrArgs.setUserId("13500000000");
-				pwdErrArgs.setPassword("test12");
+				pwdErrArgs.setUserId("15131196979");
+				pwdErrArgs.setPassword("test123");
 				resp = HttpInvokeHelper.invokPost(urllogin, JSON.toJSONString(pwdErrArgs));
 			}catch(Exception ex){
 				ex.printStackTrace();

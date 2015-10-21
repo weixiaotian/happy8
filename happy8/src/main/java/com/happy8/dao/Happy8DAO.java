@@ -46,6 +46,10 @@ public class Happy8DAO {
 	private static String sqlQueryClubListByTel = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude from ha_club where phone like ? order by clubid desc limit ?,?";
 	private static String sqlQueryClubListByAddr = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude from ha_club where addr like ? order by clubid desc limit ?,?";
 	private static String sqlQueryClubListByGeoHash = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude from ha_club where geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? order by clubid desc limit ?,?";
+	private static String sqlInsertAddFriendReq = "insert into ha_addfriendreq(userid,friendid) values(?,?)";
+	private static String sqlDeleteAddFriendReq = "delete from ha_addfriendreq where userid = ? and friendid = ?";
+	private static String sqlInsetFriendReq = "insert into ha_friend(userid,friendid) values(?,?)";
+	private static String sqlDeleteFriend = "delete from ha_friend where userid = ? and friendid = ?";
 	
 	public static void initialize() throws Exception{
 		Properties p = new Properties();
@@ -523,5 +527,45 @@ public class Happy8DAO {
 			log.error("getTimeLineList error", ex);
 			throw ex;
 		}
-	} 
+	}
+	
+	public static void insertAddFriendReq(String userId,String friendId) throws Exception{
+		try{
+			Object []values = {userId,friendId};
+			happy8DB.executeNonQuery(sqlInsertAddFriendReq, values);
+		}catch(Exception ex){
+			log.error("insertAddFriendReq error", ex);
+			throw ex;
+		}
+	}
+	
+	public static void delAddFriendReq(String userId,String friendId) throws Exception{
+		try{
+			Object []values = {userId,friendId};
+			happy8DB.executeNonQuery(sqlDeleteAddFriendReq, values);
+		}catch(Exception ex){
+			log.error("delAddFriendReq error", ex);
+			throw ex;
+		}
+	}
+	
+	public static void insertFriend(String userId,String friendId) throws Exception{
+		try{
+			Object []values = {userId,friendId};
+			happy8DB.executeNonQuery(sqlInsetFriendReq, values);
+		}catch(Exception ex){
+			log.error("insertFriend error", ex);
+			throw ex;
+		}
+	}
+	
+	public static void deleteFriend(String userId,String friendId) throws Exception{
+		try{
+			Object []values = {userId,friendId};
+			happy8DB.executeNonQuery(sqlDeleteFriend, values);
+		}catch(Exception ex){
+			log.error("delteFriend error", ex);
+			throw ex;
+		}
+	}
 }
