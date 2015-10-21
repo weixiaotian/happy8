@@ -18,6 +18,9 @@ import com.happy8.app.club.QueryClubListServlet;
 import com.happy8.app.findbuddy.FindBuddyInfoListServlet;
 import com.happy8.app.findbuddy.FindBuddyInfoServlet;
 import com.happy8.app.findbuddy.ReplayFindBuddyInfoServlet;
+import com.happy8.app.friend.AddFriendServlet;
+import com.happy8.app.friend.AllowAddFriendServlet;
+import com.happy8.app.friend.DeleteFriendServlet;
 import com.happy8.app.timeline.DeleteTimeLineServlet;
 import com.happy8.app.timeline.ReplayTimeLineServlet;
 import com.happy8.app.timeline.TimeLineInfoListServlet;
@@ -96,6 +99,10 @@ public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.cl
 		context.addServlet(new ServletHolder(new FavoriteClubListServlet()), "/happy8/favoriteclublist");
 		context.addServlet(new ServletHolder(new QueryClubListServlet()), "/happy8/queryclublist");
 		context.addServlet(new ServletHolder(new NearbyClubListServlet()), "/happy8/nearbyclublist");
+		
+		context.addServlet(new ServletHolder(new AddFriendServlet()), "/happy8/addfriend");
+		context.addServlet(new ServletHolder(new DeleteFriendServlet()), "/happy8/deletefriend");
+		context.addServlet(new ServletHolder(new AllowAddFriendServlet()), "/happy8/allowaddfriend");
 		
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(port);
