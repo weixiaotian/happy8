@@ -361,7 +361,7 @@ public class Happy8DAO {
 		}
 		
 		try{
-			DataTable dt = happy8DB.executeTable(sqlSelectTimeLineCommentList, infoIds.toArray());
+			DataTable dt = happy8DB.executeTable(sqlSelectTimeLineCommentList, infoIds);
 			Map<Long,List<TimeLineCommentInfoItem>> map = new HashMap<Long,List<TimeLineCommentInfoItem>>();
 			for(DataRow dr : dt.getRows()){
 				long tlInfoId = dr.getLong("tlinfoid");
