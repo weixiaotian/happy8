@@ -141,7 +141,7 @@ public class Happy8DAO {
 	
 	public static long insertFindBuddyInfo(String userId,String infoContent) throws Exception{
 		try{
-			String []params = {"userid","infocontent"};
+			String []params = {"@userid","@infocontent"};
 			Object []values = {userId,infoContent};
 			DataTable dt = happy8DB.spExecuteTable("USP_InsertFindBuddyInfo", params, values);
 			return dt.getRow(0).getLong(1);
@@ -153,7 +153,7 @@ public class Happy8DAO {
 	
 	public static long insertFindBuddyComment(long bdInfoId,String publishId,String commentedId,String commentText) throws Exception{
 		try{
-			String []params = {"bdinfoid", "publishid","commentedid","commenttext"};
+			String []params = {"@bdinfoid", "@publishid","@commentedid","@commenttext"};
 			Object []values = {bdInfoId,publishId,commentedId,commentText};
 			DataTable dt = happy8DB.spExecuteTable("USP_InsertFindBuddyComment", params, values);
 			return dt.getRow(0).getLong(1);
@@ -180,8 +180,8 @@ public class Happy8DAO {
 	private static List<FindBuddyInfoItem> getFindBuddyInfoListNoComment(int start,int end) throws Exception{
 		try{
 			List<FindBuddyInfoItem> res = new ArrayList<FindBuddyInfoItem>();
-			int count = end - start + 1;
-			Object []values = {start,count};
+			int count = end - start ;
+			Object []values = {start , count};
 			DataTable dt = happy8DB.executeTable(sqlSelectFindBuddyInfoList, values);
 			for(DataRow dr : dt.getRows()){
 				FindBuddyInfoItem item = new FindBuddyInfoItem();
@@ -204,7 +204,7 @@ public class Happy8DAO {
 		}
 		
 		try{
-			DataTable dt = happy8DB.executeTable(sqlSelectFindBuddyCommentList, infoIds.toArray());
+			DataTable dt = happy8DB.executeTable(sqlSelectFindBuddyCommentList, infoIds);
 			Map<Long,List<FindBuddyCommentInfo>> map = new HashMap<Long,List<FindBuddyCommentInfo>>();
 			for(DataRow dr : dt.getRows()){
 				long bdInfoId = dr.getLong("bdinfoid");
@@ -256,7 +256,7 @@ public class Happy8DAO {
 	
 	public static long insertTimeLineInfo(String userId,String infoContent) throws Exception{
 		try{
-			String []params = {"userid","infocontent"};
+			String []params = {"@userid","@infocontent"};
 			Object []values = {userId,infoContent};
 			DataTable dt = happy8DB.spExecuteTable("USP_InsertTimeLineInfo", params, values);
 			return dt.getRow(0).getLong(1);
@@ -278,7 +278,7 @@ public class Happy8DAO {
 	
 	public static long insertTimeLineComment(long tlInfoId,String publishId,String commentedId,String commentText) throws Exception{
 		try{
-			String []params = {"tlinfoid", "publishid","commentedid","commenttext"};
+			String []params = {"@tlinfoid", "@publishid","@commentedid","@commenttext"};
 			Object []values = {tlInfoId,publishId,commentedId,commentText};
 			DataTable dt = happy8DB.spExecuteTable("USP_InsertTimeLineComment", params, values);
 			return dt.getRow(0).getLong(1);
@@ -311,7 +311,7 @@ public class Happy8DAO {
 	public static List<TimeLineInfoItem> getTimeLineList(String userId,int start,int end) throws Exception{
 		try{
 			List<TimeLineInfoItem> res = new ArrayList<TimeLineInfoItem>();
-			int count = end - start + 1;
+			int count = end - start;
 			Object []values = {userId,start,count};
 			DataTable dt = happy8DB.executeTable(sqlSelectTimeLineList, values);
 			for(DataRow dr : dt.getRows()){
@@ -334,7 +334,7 @@ public class Happy8DAO {
 	public static List<TimeLineInfoItem> getTimeLineSelfSendList(String userId,int start,int end) throws Exception{
 		try{
 			List<TimeLineInfoItem> res = new ArrayList<TimeLineInfoItem>();
-			int count = end - start + 1;
+			int count = end - start;
 			Object []values = {userId,start,count};
 			DataTable dt = happy8DB.executeTable(sqlSelectTimeLineSelfSendList, values);
 			for(DataRow dr : dt.getRows()){
@@ -398,7 +398,7 @@ public class Happy8DAO {
 	
 	public static int insertClub(String ownerId,String addr,String phone,String playStyle,double sale,double longitude,double latitude,String geohash) throws Exception{
 		try{
-			String []params = {"ownerid","addr","phone","playstyle","sale","longitude","latitude","geohash"};
+			String []params = {"@ownerid","@addr","@phone","@playstyle","@sale","@longitude","@latitude","@geohash"};
 			Object []values = {ownerId,addr,phone,playStyle,sale,longitude,latitude,geohash};
 			DataTable dt = happy8DB.spExecuteTable("USP_InsertClub", params, values);
 			return dt.getRow(0).getInt(1);
@@ -453,7 +453,7 @@ public class Happy8DAO {
 	public static List<ClubItem> getFavoriteClubList(String userId,int start,int end) throws Exception{
 		try{
 			List<ClubItem> res = new ArrayList<ClubItem>();
-			int count = end - start + 1;
+			int count = end - start ;
 			Object []values = {userId,start,count};
 			DataTable dt = happy8DB.executeTable(sqlSelectFavoriteClubList, values);
 			for(DataRow dr : dt.getRows()){
@@ -477,7 +477,7 @@ public class Happy8DAO {
 	public static List<ClubItem> queryClubList(String index,String type,int start,int end) throws Exception{
 		try{
 			List<ClubItem> res = new ArrayList<ClubItem>();
-			int count = end - start + 1;
+			int count = end - start;
 			String queryIndex = "%"+index+"%";
 			Object []values = {queryIndex , start , count};
 			String sql = "";
@@ -508,14 +508,14 @@ public class Happy8DAO {
 	public static List<ClubItem> getNearByClubList(String[] adjAndgeo,int start,int end) throws Exception{
 		try{
 			List<ClubItem> res = new ArrayList<ClubItem>();
-			int count = end - start + 1;
+			int count = end - start ;
 			//String queryIndex = geoHash+"%";
 			Object []values = new Object[adjAndgeo.length + 2];
 			for(int i=0;i<adjAndgeo.length;i++){
 				values[i] = adjAndgeo[i]+"%";
 			}
 			values[adjAndgeo.length] = start;
-			values[adjAndgeo.length+1] = end;
+			values[adjAndgeo.length+1] = count;
 			DataTable dt = happy8DB.executeTable(sqlQueryClubListByGeoHash, values);
 			for(DataRow dr : dt.getRows()){
 				ClubItem item = new ClubItem();
@@ -577,7 +577,7 @@ public class Happy8DAO {
 	
 	public static long insertBookClub(String userId,long clubId,int tableIndex,int chairIndex,Date startTime,int duration) throws Exception{
 		try{
-			String []params = {"userid","clubid","tableindex","chairIndex","startTime","duration"};
+			String []params = {"@userid","@clubid","@tableindex","@chairIndex","@startTime","@duration"};
 			Object []values = {userId,clubId,tableIndex,chairIndex,startTime,duration};
 			DataTable dt = happy8DB.spExecuteTable("USP_InsertBookClub", params, values);
 			return dt.getRow(0).getLong(1);
@@ -600,7 +600,7 @@ public class Happy8DAO {
 	public static List<BookClubItem> getBookClubList(String userId,int start,int end) throws Exception{
 		try{
 			List<BookClubItem> res = new ArrayList<BookClubItem>();
-			int count = end - start + 1;
+			int count = end - start;
 			Object []values = {userId,start,count};
 			DataTable dt = happy8DB.executeTable(sqlSelectBookClubList, values);
 			for(DataRow dr : dt.getRows()){

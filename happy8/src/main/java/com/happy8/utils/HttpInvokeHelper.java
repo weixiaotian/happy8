@@ -112,7 +112,7 @@ public class HttpInvokeHelper {
 		try {
 			URL url = new URL(urlStr);
 			con = (HttpURLConnection) url.openConnection();
-			con.setDoOutput(true);
+			//con.setDoOutput(true);
 			con.setDoInput(true);
 			con.setUseCaches(false);
 			con.setConnectTimeout(5000);
