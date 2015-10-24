@@ -1,7 +1,10 @@
 package com.happy8.dao;
 
 import java.io.FileInputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +18,7 @@ import tian.database.DataTable;
 import tian.database.Database;
 import tian.database.DatabaseManager;
 
+import com.happy8.args.BookClubItem;
 import com.happy8.args.ClubItem;
 import com.happy8.args.FindBuddyCommentInfo;
 import com.happy8.args.FindBuddyInfoItem;
@@ -50,6 +54,8 @@ public class Happy8DAO {
 	private static String sqlDeleteAddFriendReq = "delete from ha_addfriendreq where userid = ? and friendid = ?";
 	private static String sqlInsetFriendReq = "insert into ha_friend(userid,friendid) values(?,?)";
 	private static String sqlDeleteFriend = "delete from ha_friend where userid = ? and friendid = ?";
+	private static String sqlDeleteBookClub = "delete from ha_bookclub where bookid = ?";
+	private static String sqlSelectBookClubList = "select bookid,userid,clubid,tableindex,chairindex,starttime,duration from ha_bookclub where userid = ? order by bookid desc limit ?,?";
 	
 	public static void initialize() throws Exception{
 		Properties p = new Properties();
@@ -539,10 +545,10 @@ public class Happy8DAO {
 		}
 	}
 	
-	public static void delAddFriendReq(String userId,String friendId) throws Exception{
+	public static int delAddFriendReq(String userId,String friendId) throws Exception{
 		try{
 			Object []values = {userId,friendId};
-			happy8DB.executeNonQuery(sqlDeleteAddFriendReq, values);
+			return happy8DB.executeNonQuery(sqlDeleteAddFriendReq, values);
 		}catch(Exception ex){
 			log.error("delAddFriendReq error", ex);
 			throw ex;
@@ -567,5 +573,56 @@ public class Happy8DAO {
 			log.error("delteFriend error", ex);
 			throw ex;
 		}
+	}
+	
+	public static long insertBookClub(String userId,long clubId,int tableIndex,int chairIndex,Date startTime,int duration) throws Exception{
+		try{
+			String []params = {"userid","clubid","tableindex","chairIndex","startTime","duration"};
+			Object []values = {userId,clubId,tableIndex,chairIndex,startTime,duration};
+			DataTable dt = happy8DB.spExecuteTable("USP_InsertBookClub", params, values);
+			return dt.getRow(0).getLong(1);
+		}catch(Exception ex){
+			log.error("insertBookClub error", ex);
+			throw ex;
+		}
+	}
+	
+	public static void deleteBookClub(long bookId) throws Exception{
+		try{
+			Object []values = { bookId };
+			happy8DB.executeNonQuery(sqlDeleteBookClub, values);
+		}catch(Exception ex){
+			log.error("deleteBookClub error", ex);
+			throw ex;
+		}
+	}
+	
+	public static List<BookClubItem> getBookClubList(String userId,int start,int end) throws Exception{
+		try{
+			List<BookClubItem> res = new ArrayList<BookClubItem>();
+			int count = end - start + 1;
+			Object []values = {userId,start,count};
+			DataTable dt = happy8DB.executeTable(sqlSelectBookClubList, values);
+			for(DataRow dr : dt.getRows()){
+				BookClubItem item = new BookClubItem();
+				item.setUserId(dr.getString("userid"));
+				item.setBookId(dr.getLong("bookid"));
+				item.setChairIndex(dr.getInt("chairindex"));
+				item.setClubId(dr.getInt("clubid"));
+				item.setDuration(dr.getInt("duration"));
+				item.setStartTime(dateFormat(dr.getDateTime("starttime")));
+				item.setTableIndex(dr.getInt("tableindex"));
+				res.add(item);
+			}
+			return res;
+		}catch(Exception ex){
+			log.error("getBookClubList error", ex);
+			throw ex;
+		}
+	}
+	
+	private static String dateFormat(Date date){
+		DateFormat format1 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        return format1.format(date);
 	}
 }

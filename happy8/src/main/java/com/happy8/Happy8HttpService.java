@@ -10,6 +10,9 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.happy8.app.bookclub.BookClubListServlet;
+import com.happy8.app.bookclub.BookClubServlet;
+import com.happy8.app.bookclub.CancelBookServlet;
 import com.happy8.app.club.FavoriteClubListServlet;
 import com.happy8.app.club.NearbyClubListServlet;
 import com.happy8.app.club.ProcessClubServlet;
@@ -103,6 +106,10 @@ public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.cl
 		context.addServlet(new ServletHolder(new AddFriendServlet()), "/happy8/addfriend");
 		context.addServlet(new ServletHolder(new DeleteFriendServlet()), "/happy8/deletefriend");
 		context.addServlet(new ServletHolder(new AllowAddFriendServlet()), "/happy8/allowaddfriend");
+		
+		context.addServlet(new ServletHolder(new BookClubServlet()), "/happy8/bookclub");
+		context.addServlet(new ServletHolder(new CancelBookServlet()), "/happy8/cancelbook");
+		context.addServlet(new ServletHolder(new BookClubListServlet()), "/happy8/bookclublist");
 		
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(port);
