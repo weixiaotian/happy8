@@ -47,7 +47,8 @@ public class TimeLineInfoServlet extends HttpServlet{
 				return;
 			}
 			
-			long id = Happy8DAO.insertFindBuddyInfo(args.getUserId(), args.getInfoContent());
+			
+			long id = Happy8DAO.insertTimeLineInfo(args.getUserId(), args.getInfoContent());
 			
 			List<String> publishUsers = Happy8DAO.getFriendUserIdList(args.getUserId());
 			publishUsers.add(args.getUserId());//加入自己

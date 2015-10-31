@@ -45,6 +45,7 @@ public class DeleteFriendServlet extends HttpServlet{
 			}
 			
 			Happy8DAO.deleteFriend(args.getUserId(), args.getFriendUserId());
+			Happy8DAO.deleteFriend(args.getFriendUserId(), args.getUserId());//双方好友关系同时删除
 			
 			HttpTools.sendResponseOnlyStatusCode(response, 200);
 			

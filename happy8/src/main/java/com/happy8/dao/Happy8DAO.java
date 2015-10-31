@@ -35,8 +35,8 @@ public class Happy8DAO {
 	private static String sqlRegisterUser = "insert into ha_user(userid,password) values(?,?)";
 	private static String sqlResetPassword = "update ha_user set password = ? where userid = ?";
 	private static String sqlSelectFindBuddyInfoList = "select bdinfoid,userid,infocontent from ha_findbuddyinfo order by bdinfoid desc limit ?,?"; 
-	private static String sqlSelectFindBuddyCommentList = "SELECT commentid,bdinfoid,publishid,commentedid,commenttext FROM ha_findbuddycomment WHERE bdinfoid IN ( ? )";
-	private static String sqlSelectTimeLineCommentList = "SELECT commentid,tlinfoid,publishid,commentedid,commenttext FROM ha_timelinecomment WHERE bdinfoid IN ( ? )";
+	private static String sqlSelectFindBuddyCommentList = "SELECT commentid,bdinfoid,publishid,commentedid,commenttext FROM ha_findbuddycomment WHERE bdinfoid IN (%s)";
+	private static String sqlSelectTimeLineCommentList = "SELECT commentid,tlinfoid,publishid,commentedid,commenttext FROM ha_timelinecomment WHERE tlinfoid IN (%s)";
 	private static String sqlSelectFriendList = "select friendid from ha_friend where userid = ?";
 	private static String sqlInsertUserTimeLine = "insert into ha_usertimeline values(?,?)";
 	private static String sqlDeleteTimeLine = "delete from ha_usertimeline where tlinfoid = ?";
@@ -46,10 +46,10 @@ public class Happy8DAO {
 	private static String sqlDeleteClub = "delete from ha_club where clubid = ?";
 	private static String sqlInsertFavoriteClub = "insert into ha_userfavoriteclub(userid,clubid) values(?,?)";
 	private static String sqlDeleteFavoriteClub = "delete from ha_userfavoriteclub where userid = ? and clubid = ?";
-	private static String sqlSelectFavoriteClubList = "select b.clubid,b.ownerid,b.addr,b.sale,b.phone,b.playstyle,b.longitude,b.latitude from ha_userfavoriteclub a,ha_club b where a.userid = ? and a.clubid = b.clubid order by a.clubid desc limit ?,?";
-	private static String sqlQueryClubListByTel = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude from ha_club where phone like ? order by clubid desc limit ?,?";
-	private static String sqlQueryClubListByAddr = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude from ha_club where addr like ? order by clubid desc limit ?,?";
-	private static String sqlQueryClubListByGeoHash = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude from ha_club where geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? order by clubid desc limit ?,?";
+	private static String sqlSelectFavoriteClubList = "select b.clubid,b.ownerid,b.addr,b.sale,b.phone,b.playstyle,b.longitude,b.latitude,b.clubimageurl from ha_userfavoriteclub a,ha_club b where a.userid = ? and a.clubid = b.clubid order by a.clubid desc limit ?,?";
+	private static String sqlQueryClubListByTel = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where phone like ? order by clubid desc limit ?,?";
+	private static String sqlQueryClubListByAddr = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where addr like ? order by clubid desc limit ?,?";
+	private static String sqlQueryClubListByGeoHash = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? order by clubid desc limit ?,?";
 	private static String sqlInsertAddFriendReq = "insert into ha_addfriendreq(userid,friendid) values(?,?)";
 	private static String sqlDeleteAddFriendReq = "delete from ha_addfriendreq where userid = ? and friendid = ?";
 	private static String sqlInsetFriendReq = "insert into ha_friend(userid,friendid) values(?,?)";
@@ -204,7 +204,7 @@ public class Happy8DAO {
 		}
 		
 		try{
-			DataTable dt = happy8DB.executeTable(sqlSelectFindBuddyCommentList, infoIds);
+			DataTable dt = happy8DB.executeTable(String.format(sqlSelectFindBuddyCommentList, joinArrayItem(infoIds)),new Object[0]);
 			Map<Long,List<FindBuddyCommentInfo>> map = new HashMap<Long,List<FindBuddyCommentInfo>>();
 			for(DataRow dr : dt.getRows()){
 				long bdInfoId = dr.getLong("bdinfoid");
@@ -354,6 +354,17 @@ public class Happy8DAO {
 		}
 	}
 	
+	private static String joinArrayItem(List<Long> ids){
+		if(ids == null || ids.size() == 0)
+			return "";
+		StringBuilder sb = new StringBuilder();
+		for(Long id : ids){
+			sb.append(String.valueOf(id));
+			sb.append(",");
+		}
+		return sb.substring(0, sb.length()-1);
+	}
+	
 	private static void wrapTimeLineInfoListWithComment(List<TimeLineInfoItem> res) throws Exception{
 		List<Long> infoIds =new ArrayList<Long>();
 		for(TimeLineInfoItem info : res){
@@ -361,7 +372,7 @@ public class Happy8DAO {
 		}
 		
 		try{
-			DataTable dt = happy8DB.executeTable(sqlSelectTimeLineCommentList, infoIds);
+			DataTable dt = happy8DB.executeTable(String.format(sqlSelectTimeLineCommentList, joinArrayItem(infoIds)),new Object[0]);
 			Map<Long,List<TimeLineCommentInfoItem>> map = new HashMap<Long,List<TimeLineCommentInfoItem>>();
 			for(DataRow dr : dt.getRows()){
 				long tlInfoId = dr.getLong("tlinfoid");
@@ -396,10 +407,10 @@ public class Happy8DAO {
 		}
 	}
 	
-	public static int insertClub(String ownerId,String addr,String phone,String playStyle,double sale,double longitude,double latitude,String geohash) throws Exception{
+	public static int insertClub(String ownerId,String addr,String phone,String playStyle,double sale,double longitude,double latitude,String geohash,String clubImageUrl) throws Exception{
 		try{
-			String []params = {"@ownerid","@addr","@phone","@playstyle","@sale","@longitude","@latitude","@geohash"};
-			Object []values = {ownerId,addr,phone,playStyle,sale,longitude,latitude,geohash};
+			String []params = {"@ownerid","@addr","@phone","@playstyle","@sale","@longitude","@latitude","@geohash","@clubimageurl"};
+			Object []values = {ownerId,addr,phone,playStyle,sale,longitude,latitude,geohash,clubImageUrl};
 			DataTable dt = happy8DB.spExecuteTable("USP_InsertClub", params, values);
 			return dt.getRow(0).getInt(1);
 		}catch(Exception ex){
@@ -465,6 +476,7 @@ public class Happy8DAO {
 				item.setOwnerId(dr.getString("ownerid"));
 				item.setPlayStyle(dr.getString("playstyle"));
 				item.setSale(dr.getDouble("sale"));
+				item.setClubImageUrl(dr.getString("clubimageurl"));
 				res.add(item);
 			}
 			return res;
@@ -496,6 +508,7 @@ public class Happy8DAO {
 				item.setOwnerId(dr.getString("ownerid"));
 				item.setPlayStyle(dr.getString("playstyle"));
 				item.setSale(dr.getDouble("sale"));
+				item.setClubImageUrl(dr.getString("clubimageurl"));
 				res.add(item);
 			}
 			return res;
@@ -526,6 +539,7 @@ public class Happy8DAO {
 				item.setOwnerId(dr.getString("ownerid"));
 				item.setPlayStyle(dr.getString("playstyle"));
 				item.setSale(dr.getDouble("sale"));
+				item.setClubImageUrl(dr.getString("clubimageurl"));
 				res.add(item);
 			}
 			return res;

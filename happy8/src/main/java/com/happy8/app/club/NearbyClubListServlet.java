@@ -33,8 +33,8 @@ public class NearbyClubListServlet extends HttpServlet{
 			try{
 				start = Integer.valueOf(request.getParameter("start"));
 				end = Integer.valueOf(request.getParameter("end"));
-				longitude = Long.valueOf(request.getParameter("longitude"));
-				latitude = Long.valueOf(request.getParameter("latitude"));
+				longitude = Double.valueOf(request.getParameter("longitude"));
+				latitude = Double.valueOf(request.getParameter("latitude"));
 			}catch(Exception ex){
 				log.error("parse index error",ex);
 				HttpTools.sendResponseOnlyStatusCode(response, 400);

@@ -77,7 +77,7 @@ public class ProcessClubServlet extends HttpServlet{
 		}
 		String geohash = GeoHashTool.generateGeoHashCode(args.getLongitude(), args.getLatitude());
 		int id = Happy8DAO.insertClub(args.getOwnerId(), args.getAddr(), args.getPhone(), args.getPalyStyle(),
-				args.getSale(), args.getLongitude(), args.getLatitude(), geohash);
+				args.getSale(), args.getLongitude(), args.getLatitude(), geohash,args.getClubImageUrl());
 		
 		AddClubRspArgs res = new AddClubRspArgs();
 		res.setClubId(id);
@@ -97,6 +97,12 @@ public class ProcessClubServlet extends HttpServlet{
 		}
 		
 		if(StringUtils.isNullOrEmpty(body) || args == null){
+			HttpTools.sendResponseOnlyStatusCode(response, 400);
+			return;
+		}
+		
+		if(args.getClubId() == 0){
+			log.error("club id error 0");
 			HttpTools.sendResponseOnlyStatusCode(response, 400);
 			return;
 		}
@@ -127,6 +133,12 @@ public class ProcessClubServlet extends HttpServlet{
 			sb.append(", sale = ? ");
 			values.add(args.getSale());
 		}
+		
+		if(!StringUtils.isNullOrEmpty(args.getClubImageUrl())){
+			sb.append(", clubimageurl = ? ");
+			values.add(args.getClubImageUrl());
+		}
+		
 		boolean needGeoHash = false;
 		if(args.getLongitude() != 0){
 			sb.append(", longitude = ? ");

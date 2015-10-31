@@ -12,6 +12,8 @@ public class AddClubReqArgs {
 	private String palyStyle;
 	private double longitude;
 	private double latitude;
+	private String clubImageUrl;
+	
 	public double getLongitude() {
 		return longitude;
 	}
@@ -54,4 +56,12 @@ public class AddClubReqArgs {
 	public void setPalyStyle(String palyStyle) {
 		this.palyStyle = palyStyle;
 	}
+	public String getClubImageUrl() {
+		return clubImageUrl;
+	}
+	public void setClubImageUrl(String clubImageUrl) {
+		this.clubImageUrl = clubImageUrl;
+	}
+	
+	
 }
