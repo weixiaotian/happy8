@@ -1,4 +1,6 @@
-package com.happy8.app.user;
+package com.happy8.app.coupon;
+
+import java.util.UUID;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -8,15 +10,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
-import com.happy8.args.UserInfoArgs;
-import com.happy8.args.UserPasswordArgs;
+import com.happy8.args.AddCouponReqArgs;
+import com.happy8.args.AddCouponRspArgs;
+import com.happy8.args.ConsumeCouponReqArgs;
 import com.happy8.dao.Happy8DAO;
 import com.happy8.utils.HttpTools;
 import com.happy8.utils.StringUtils;
 
-public class UserLoginServlet extends HttpServlet {
-	
-	private static Logger log = LoggerFactory.getLogger(UserLoginServlet.class);
+public class ConsumeCouponServlet extends HttpServlet{
+	private static Logger log = LoggerFactory.getLogger(AddCouponServlet.class);
 	/**
 	 * 
 	 */
@@ -26,9 +28,9 @@ public class UserLoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response){
 		try{
 			String body = HttpTools.getRequestBody(request);
-			UserPasswordArgs args = null;
+			ConsumeCouponReqArgs args = null;
 			try{
-				args = JSON.parseObject(body, UserPasswordArgs.class);
+				args = JSON.parseObject(body, ConsumeCouponReqArgs.class);
 			}catch(Exception ex){
 				log.error("parse error req: "+body, ex);
 				HttpTools.sendResponseOnlyStatusCode(response, 400);
@@ -39,14 +41,23 @@ public class UserLoginServlet extends HttpServlet {
 				HttpTools.sendResponseOnlyStatusCode(response, 400);
 				return;
 			}
-			int statusCode = Happy8DAO.userLogin(args.getUserId(), args.getPassword());
-			if(statusCode == 200){
-				Happy8DAO.updateUserStatus(args.getUserId(), 1);
+			
+			if(StringUtils.isNullOrEmpty(args.getUserId())){
+				log.error("req userid is null");
+				HttpTools.sendResponseOnlyStatusCode(response, 400);
+				return;
 			}
-				
-			HttpTools.sendResponseOnlyStatusCode(response, statusCode);
+			
+			boolean isCon = Happy8DAO.insertUserCoupon(args.getUserId(), args.getCouponId());
+			
+			if(!isCon){
+				HttpTools.sendResponseOnlyStatusCode(response, 405);
+				return;
+			}
+			
+			HttpTools.sendResponseOnlyStatusCode(response, 200);
 		}catch(Exception ex){
-			log.error("UserLoginServlet process error",ex);
+			log.error("ConsumeCouponServlet process error",ex);
 			HttpTools.sendResponseOnlyStatusCode(response, 500);
 		}
 	}

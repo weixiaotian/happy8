@@ -18,18 +18,27 @@ import com.happy8.app.club.NearbyClubListServlet;
 import com.happy8.app.club.ProcessClubServlet;
 import com.happy8.app.club.ProcessFavoriteServlet;
 import com.happy8.app.club.QueryClubListServlet;
+import com.happy8.app.club.RateClubServlet;
+import com.happy8.app.coupon.AddCouponServlet;
+import com.happy8.app.coupon.ConsumeCouponServlet;
+import com.happy8.app.coupon.DeleteCouponServlet;
+import com.happy8.app.coupon.MyCouponListServlet;
 import com.happy8.app.findbuddy.FindBuddyInfoListServlet;
 import com.happy8.app.findbuddy.FindBuddyInfoServlet;
 import com.happy8.app.findbuddy.ReplayFindBuddyInfoServlet;
 import com.happy8.app.friend.AddFriendServlet;
 import com.happy8.app.friend.AllowAddFriendServlet;
 import com.happy8.app.friend.DeleteFriendServlet;
+import com.happy8.app.superuser.ApproveClubServlet;
+import com.happy8.app.superuser.DeleteFindBuddyInfoServlet;
+import com.happy8.app.superuser.DeleteFindBuddyReplyServlet;
 import com.happy8.app.timeline.DeleteTimeLineServlet;
 import com.happy8.app.timeline.ReplayTimeLineServlet;
 import com.happy8.app.timeline.TimeLineInfoListServlet;
 import com.happy8.app.timeline.TimeLineInfoServlet;
 import com.happy8.app.user.GetUserInfoServlet;
 import com.happy8.app.user.LogoutServlet;
+import com.happy8.app.user.QueryUserLevelServlet;
 import com.happy8.app.user.RegisterUserServlet;
 import com.happy8.app.user.ResetPasswordServlet;
 import com.happy8.app.user.UpdateUserInfoServlet;
@@ -110,6 +119,18 @@ public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.cl
 		context.addServlet(new ServletHolder(new BookClubServlet()), "/happy8/bookclub");
 		context.addServlet(new ServletHolder(new CancelBookServlet()), "/happy8/cancelbook");
 		context.addServlet(new ServletHolder(new BookClubListServlet()), "/happy8/bookclublist");
+		
+		context.addServlet(new ServletHolder(new QueryUserLevelServlet()), "/happy8/queryuserlevel");
+		context.addServlet(new ServletHolder(new RateClubServlet()), "/happy8/rateclub");
+		
+		context.addServlet(new ServletHolder(new ApproveClubServlet()), "/happy8/approveclub");
+		context.addServlet(new ServletHolder(new DeleteFindBuddyInfoServlet()), "/happy8/deletefindbuddyinfo");
+		context.addServlet(new ServletHolder(new DeleteFindBuddyReplyServlet()), "/happy8/deletefindbuddyreply");
+		
+		context.addServlet(new ServletHolder(new AddCouponServlet()), "/happy8/addcoupon");
+		context.addServlet(new ServletHolder(new DeleteCouponServlet()), "/happy8/deletecoupon");
+		context.addServlet(new ServletHolder(new ConsumeCouponServlet()), "/happy8/consumecoupon");
+		context.addServlet(new ServletHolder(new MyCouponListServlet()), "/happy8/mycouponlist");
 		
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(port);

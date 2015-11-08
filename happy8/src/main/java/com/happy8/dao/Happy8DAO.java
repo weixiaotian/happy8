@@ -1,6 +1,7 @@
 package com.happy8.dao;
 
 import java.io.FileInputStream;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,11 +21,14 @@ import tian.database.DatabaseManager;
 
 import com.happy8.args.BookClubItem;
 import com.happy8.args.ClubItem;
+import com.happy8.args.CouponItem;
 import com.happy8.args.FindBuddyCommentInfo;
 import com.happy8.args.FindBuddyInfoItem;
 import com.happy8.args.TimeLineCommentInfoItem;
 import com.happy8.args.TimeLineInfoItem;
 import com.happy8.args.UserInfoArgs;
+import com.happy8.args.UserLevelArgs;
+import com.happy8.utils.StringUtils;
 
 public class Happy8DAO {
 	private static Logger log = LoggerFactory.getLogger(Happy8DAO.class);
@@ -47,15 +51,31 @@ public class Happy8DAO {
 	private static String sqlInsertFavoriteClub = "insert into ha_userfavoriteclub(userid,clubid) values(?,?)";
 	private static String sqlDeleteFavoriteClub = "delete from ha_userfavoriteclub where userid = ? and clubid = ?";
 	private static String sqlSelectFavoriteClubList = "select b.clubid,b.ownerid,b.addr,b.sale,b.phone,b.playstyle,b.longitude,b.latitude,b.clubimageurl from ha_userfavoriteclub a,ha_club b where a.userid = ? and a.clubid = b.clubid order by a.clubid desc limit ?,?";
-	private static String sqlQueryClubListByTel = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where phone like ? order by clubid desc limit ?,?";
-	private static String sqlQueryClubListByAddr = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where addr like ? order by clubid desc limit ?,?";
-	private static String sqlQueryClubListByGeoHash = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? order by clubid desc limit ?,?";
+	private static String sqlQueryClubListByTel = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where phone like ? and status = 1 order by clubid desc limit ?,?";
+	private static String sqlQueryClubListByAddr = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where addr like ? and status = 1 order by clubid desc limit ?,?";
+	private static String sqlQueryClubListByGeoHash = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where (geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ?) and status = 1  order by clubid desc limit ?,?";
 	private static String sqlInsertAddFriendReq = "insert into ha_addfriendreq(userid,friendid) values(?,?)";
 	private static String sqlDeleteAddFriendReq = "delete from ha_addfriendreq where userid = ? and friendid = ?";
 	private static String sqlInsetFriendReq = "insert into ha_friend(userid,friendid) values(?,?)";
 	private static String sqlDeleteFriend = "delete from ha_friend where userid = ? and friendid = ?";
 	private static String sqlDeleteBookClub = "delete from ha_bookclub where bookid = ?";
 	private static String sqlSelectBookClubList = "select bookid,userid,clubid,tableindex,chairindex,starttime,duration from ha_bookclub where userid = ? order by bookid desc limit ?,?";
+	private static String sqlIsUserSuperAdimin = "select userid from ha_user where userid = ? and usertype = 4";
+	private static String sqlInsertCoupon = "insert into ha_coupon(couponid,type,discount,value,startamout,expiretime) values (?,?,?,?,?,?)";
+	private static String sqlInsertUserCoupon = "insert into ha_usercoupon(userid,consumecouponid,createdate) values(?,?,?) ON DUPLICATE KEY UPDATE createdate = ?";
+	private static String sqlDeleteCoupon= "delete from ha_coupon where couponid = ?";
+	private static String sqlSelectMyCouponList = "SELECT a.couponid,a.type,a.discount,a.value,a.startamout,b.consumecouponid FROM ha_coupon a LEFT JOIN ha_usercoupon b ON a.`couponid` = b.`consumecouponid` WHERE  b.userid = '?' ORDER BY a.id DESC LIMIT ?,?";
+	private static String sqlSelectUnConsumeCouponList = "select couponid,type,discount,value,startamout from ha_coupon where expiretime > ? ORDER BY id DESC LIMIT ?,?";
+	private static String sqlSelectConsumeCouponList = "select a.couponid,a.type,a.discount,a.value,a.startamout from ha_coupon a,ha_usercoupon b where a.`couponid` = b.`consumecouponid`  ORDER BY a.id DESC LIMIT ?,? ";
+	private static String sqlUpdateClubStatus = "UPDATE ha_club SET status = ? WHERE clubid = ?";
+	private static String sqlDeleteFindBuddyInfo = "delete from ha_findbuddyinfo where bdinfoid = ?";
+	private static String sqlDeleteFindBuddyReplayAllOne = "delete from ha_findbuddycomment where bdinfoid = ?";
+	private static String sqlDeleteFindBuddyReplay = "delete from ha_findbuddycomment where commentid = ?";
+	private static String sqlInsertUserRate = "insert into ha_userclubrate(clubid,userid,rate) values(?,?,?)  ON DUPLICATE KEY UPDATE  rate = ?";
+	private static String sqlSelectSumRateAndCount = "select sum(rate) sum,count(*) count from ha_userclubrate where clubid = ?";
+	private static String sqlUpdateClubRate = "update ha_club set rate = ? where clubid = ?";
+	private static String sqlSelectUserLevel = "select usertype,userstats from ha_user where userid = ?";
+	private static String sqlUpdateUserStatus = "update ha_user set userstatus = ? where userid = ?";
 	
 	public static void initialize() throws Exception{
 		Properties p = new Properties();
@@ -631,6 +651,213 @@ public class Happy8DAO {
 			return res;
 		}catch(Exception ex){
 			log.error("getBookClubList error", ex);
+			throw ex;
+		}
+	}
+	
+	public static boolean isUserSuperAdmin(String userId) throws Exception{
+		try{
+			Object []values = { userId };
+			DataTable dt = happy8DB.executeTable(sqlIsUserSuperAdimin, values);
+			if(dt.getRowCount() > 0)
+				return true;
+			
+			return false;
+		}catch(Exception ex){
+			log.error("isUserSuperAdmin error", ex);
+			throw ex;
+		}
+	}
+	
+	public static boolean insertUserCoupon(String userId,String couponId) throws Exception{
+		try{
+			Object []values = { userId,couponId ,new Date(),new Date()};
+			int rowCount = happy8DB.executeNonQuery(sqlInsertUserCoupon, values);
+			if(rowCount == 1){
+				return true;
+			}
+			return false;
+		}catch(Exception ex){
+			log.error("insertUserCoupon error", ex);
+			throw ex;
+		}
+	}
+	
+	public static void insertCoupon(String couponId,int type,int disCount,double value,double startAmout,Date expireTime) throws Exception{
+		try{
+			Object []values = { couponId,type,disCount,value,startAmout,expireTime };
+			happy8DB.executeNonQuery(sqlInsertCoupon, values);
+		}catch(Exception ex){
+			log.error("insertCoupon error", ex);
+			throw ex;
+		}
+	}
+	
+	public static void deleteCoupon(String couponId) throws Exception{
+		try{
+			Object []values = { couponId };
+			happy8DB.executeNonQuery(sqlDeleteCoupon, values);
+		}catch(Exception ex){
+			log.error("deleteCoupon error", ex);
+			throw ex;
+		}
+	}
+	
+	public static List<CouponItem> getAllMyCouponList(String userId,int start,int end) throws Exception{
+		try{
+			List<CouponItem> res = new ArrayList<CouponItem>();
+			int count = end - start;
+			Object []values = {userId,start,count};
+			DataTable dt = happy8DB.executeTable(sqlSelectMyCouponList, values);
+			for(DataRow dr : dt.getRows()){
+				CouponItem item = new CouponItem();
+				item.setCouponId(dr.getString("couponid"));
+				item.setDisCount(dr.getInt("discount"));
+				item.setStartAmout(dr.getDouble("startamout"));
+				item.setType(dr.getInt("type"));
+				item.setValue(dr.getDouble("value"));
+				int status = StringUtils.isNullOrEmpty(dr.getString("consumecouponid")) ? 1 : 2;
+				item.setStatus(status);
+				res.add(item);
+			}
+			return res;
+		}catch(Exception ex){
+			log.error("getAllMyCouponList error", ex);
+			throw ex;
+		}
+	}
+	
+	public static List<CouponItem> getUnConsumeCouponList(int start,int end) throws Exception{
+		try{
+			List<CouponItem> res = new ArrayList<CouponItem>();
+			int count = end - start;
+			Object []values = {new Date(),start,count};
+			DataTable dt = happy8DB.executeTable(sqlSelectUnConsumeCouponList, values);
+			for(DataRow dr : dt.getRows()){
+				CouponItem item = new CouponItem();
+				item.setCouponId(dr.getString("couponid"));
+				item.setDisCount(dr.getInt("discount"));
+				item.setStartAmout(dr.getDouble("startamout"));
+				item.setType(dr.getInt("type"));
+				item.setValue(dr.getDouble("value"));
+				item.setStatus(1);
+				res.add(item);
+			}
+			return res;
+		}catch(Exception ex){
+			log.error("getUnConsumeCouponList error", ex);
+			throw ex;
+		}
+	}
+	
+	public static List<CouponItem> getConsumeCouponList(String userId,int start,int end) throws Exception{
+		try{
+			List<CouponItem> res = new ArrayList<CouponItem>();
+			int count = end - start;
+			Object []values = {userId,start,count};
+			DataTable dt = happy8DB.executeTable(sqlSelectConsumeCouponList, values);
+			for(DataRow dr : dt.getRows()){
+				CouponItem item = new CouponItem();
+				item.setCouponId(dr.getString("couponid"));
+				item.setDisCount(dr.getInt("discount"));
+				item.setStartAmout(dr.getDouble("startamout"));
+				item.setType(dr.getInt("type"));
+				item.setValue(dr.getDouble("value"));
+				item.setStatus(2);
+				res.add(item);
+			}
+			return res;
+		}catch(Exception ex){
+			log.error("getConsumeCouponList error", ex);
+			throw ex;
+		}
+	}
+	
+	public static void updateClubStatus(int clubId,int status) throws Exception{
+		try{
+			Object []values = { clubId,status };
+			happy8DB.executeNonQuery(sqlUpdateClubStatus, values);
+		}catch(Exception ex){
+			log.error("updateClubStatus error", ex);
+			throw ex;
+		}
+	}
+	
+	public static void deleteFindBuddyInfo(long fdInfoId) throws Exception{
+		try{
+			Object []values = { fdInfoId };
+			happy8DB.executeNonQuery(sqlDeleteFindBuddyInfo, values);
+			happy8DB.executeNonQuery(sqlDeleteFindBuddyReplayAllOne, values);
+		}catch(Exception ex){
+			log.error("deleteFindBuddyInfo error", ex);
+			throw ex;
+		}
+	}
+	
+	public static void deleteFindBuddyReplay(long fdReplayId) throws Exception{
+		try{
+			Object []values = { fdReplayId };
+			happy8DB.executeNonQuery(sqlDeleteFindBuddyReplay, values);
+		}catch(Exception ex){
+			log.error("deleteFindBuddyReplay error", ex);
+			throw ex;
+		}
+	}
+	
+	public static int rateClub(int clubId,String userId,int rate) throws Exception{
+		try{
+			Object []values = { clubId,userId,rate };
+			int row = happy8DB.executeNonQuery(sqlInsertUserRate, values);
+			if(row == 2)
+				return 405;
+			
+			Object []values1 = { clubId};
+			DataTable dt = happy8DB.executeTable(sqlSelectSumRateAndCount, values1);
+			if(dt.getRowCount() == 0){
+				return 200;
+			}
+			int sum = dt.getRow(0).getInt("sum");
+			int count = dt.getRow(0).getInt("count");
+			float value = (float)sum / (float) count;
+			BigDecimal bd = new BigDecimal((double)value);
+			int   scale  =   1;//设置位数    
+			int   roundingMode  =  4;//表示四舍五入，可以选择其他舍值方式，例如去尾，等等.    
+			bd.setScale(scale,roundingMode);
+			
+			Object []values2 = { clubId,bd.floatValue()};
+			happy8DB.executeNonQuery(sqlUpdateClubRate, values2);
+			
+			return 200;
+		}catch(Exception ex){
+			log.error("rateClub error", ex);
+			throw ex;
+		}
+	}
+	
+	public static UserLevelArgs getUserLevel(String userId) throws Exception{
+		try{
+			UserLevelArgs args = new UserLevelArgs();
+			Object []values = { userId };
+			DataTable dt = happy8DB.executeTable(sqlSelectUserLevel, values);
+			if(dt.getRowCount() == 0){
+				return null;
+			}
+			args.setUserLevel(dt.getRow(0).getInt("usertype"));
+			args.setUserStatus(dt.getRow(0).getInt("userstatus"));
+			return args;
+		}catch(Exception ex){
+			log.error("getUserLevel error", ex);
+			throw ex;
+		}
+		
+	}
+	
+	public static void updateUserStatus(String userId,int userStatus) throws Exception{
+		try{
+			Object []values = { userId,userStatus };
+			happy8DB.executeNonQuery(sqlUpdateUserStatus, values);
+		}catch(Exception ex){
+			log.error("updateUserStatus error", ex);
 			throw ex;
 		}
 	}
