@@ -14,6 +14,7 @@ import com.happy8.app.bookclub.BookClubListServlet;
 import com.happy8.app.bookclub.BookClubServlet;
 import com.happy8.app.bookclub.CancelBookServlet;
 import com.happy8.app.club.FavoriteClubListServlet;
+import com.happy8.app.club.MyOwnClubListServlet;
 import com.happy8.app.club.NearbyClubListServlet;
 import com.happy8.app.club.ProcessClubServlet;
 import com.happy8.app.club.ProcessFavoriteServlet;
@@ -32,6 +33,10 @@ import com.happy8.app.friend.DeleteFriendServlet;
 import com.happy8.app.superuser.ApproveClubServlet;
 import com.happy8.app.superuser.DeleteFindBuddyInfoServlet;
 import com.happy8.app.superuser.DeleteFindBuddyReplyServlet;
+import com.happy8.app.table.AddTableServlet;
+import com.happy8.app.table.DeleteTableServlet;
+import com.happy8.app.table.UpdateTableInfoServlet;
+import com.happy8.app.table.UpdateTablePicsServlet;
 import com.happy8.app.timeline.DeleteTimeLineServlet;
 import com.happy8.app.timeline.ReplayTimeLineServlet;
 import com.happy8.app.timeline.TimeLineInfoListServlet;
@@ -131,6 +136,12 @@ public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.cl
 		context.addServlet(new ServletHolder(new DeleteCouponServlet()), "/happy8/deletecoupon");
 		context.addServlet(new ServletHolder(new ConsumeCouponServlet()), "/happy8/consumecoupon");
 		context.addServlet(new ServletHolder(new MyCouponListServlet()), "/happy8/mycouponlist");
+		
+		context.addServlet(new ServletHolder(new AddTableServlet()), "/happy8/addtable");
+		context.addServlet(new ServletHolder(new UpdateTablePicsServlet()), "/happy8/updatetablepics");
+		context.addServlet(new ServletHolder(new UpdateTableInfoServlet()), "/happy8/updatetableinfo");
+		context.addServlet(new ServletHolder(new DeleteTableServlet()), "/happy8/deletetable");
+		context.addServlet(new ServletHolder(new MyOwnClubListServlet()), "/happy8/myownclublist");
 		
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(port);
