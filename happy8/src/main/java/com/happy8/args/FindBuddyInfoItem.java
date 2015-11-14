@@ -8,6 +8,9 @@ import java.util.List;
  */
 public class FindBuddyInfoItem {
 	private String userId;
+	private String signature;
+	private String avatarUrl;
+	private String dateTime;
 	private long bdInfoId;
 	private String infoContent;
 	private List<FindBuddyCommentInfo> commentList;
@@ -29,6 +32,25 @@ public class FindBuddyInfoItem {
 	}
 	public void setInfoContent(String infoContent) {
 		this.infoContent = infoContent;
+	}
+	
+	public String getSignature() {
+		return signature;
+	}
+	public void setSignature(String signature) {
+		this.signature = signature;
+	}
+	public String getAvatarUrl() {
+		return avatarUrl;
+	}
+	public void setAvatarUrl(String avatarUrl) {
+		this.avatarUrl = avatarUrl;
+	}
+	public String getDateTime() {
+		return dateTime;
+	}
+	public void setDateTime(String dateTime) {
+		this.dateTime = dateTime;
 	}
 	public List<FindBuddyCommentInfo> getCommentList() {
 		return commentList;

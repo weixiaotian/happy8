@@ -14,6 +14,7 @@ public class ClubItem {
 	private double longitude;
 	private double latitude;
 	private String clubImageUrl;
+	private int status;
 	
 	public int getClubId() {
 		return clubId;
@@ -68,5 +69,11 @@ public class ClubItem {
 	}
 	public void setClubImageUrl(String clubImageUrl) {
 		this.clubImageUrl = clubImageUrl;
+	}
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
 	}
 }

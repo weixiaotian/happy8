@@ -9,7 +9,10 @@ public class FindBuddyCommentInfo {
 	private long bdInfoId;
 	private String commentText;
 	private String publishUserId;
-	private String commentedUserId;
+	private String signature;
+	private String avatarUrl;
+	private String dateTime;
+	//private String commentedUserId;
 	public long getCommentId() {
 		return commentId;
 	}
@@ -28,16 +31,34 @@ public class FindBuddyCommentInfo {
 	public void setPublishUserId(String publishUserId) {
 		this.publishUserId = publishUserId;
 	}
-	public String getCommentedUserId() {
-		return commentedUserId;
-	}
-	public void setCommentedUserId(String commentedUserId) {
-		this.commentedUserId = commentedUserId;
-	}
+//	public String getCommentedUserId() {
+//		return commentedUserId;
+//	}
+//	public void setCommentedUserId(String commentedUserId) {
+//		this.commentedUserId = commentedUserId;
+//	}
 	public long getBdInfoId() {
 		return bdInfoId;
 	}
 	public void setBdInfoId(long bdInfoId) {
 		this.bdInfoId = bdInfoId;
+	}
+	public String getSignature() {
+		return signature;
+	}
+	public void setSignature(String signature) {
+		this.signature = signature;
+	}
+	public String getAvatarUrl() {
+		return avatarUrl;
+	}
+	public void setAvatarUrl(String avatarUrl) {
+		this.avatarUrl = avatarUrl;
+	}
+	public String getDateTime() {
+		return dateTime;
+	}
+	public void setDateTime(String dateTime) {
+		this.dateTime = dateTime;
 	}
 }

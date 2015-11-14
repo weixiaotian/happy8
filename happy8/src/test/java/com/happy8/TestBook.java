@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.UUID;
 
 import com.alibaba.fastjson.JSON;
+import com.happy8.args.AddTableReqArgs;
 import com.happy8.args.ConsumeCouponReqArgs;
 import com.happy8.args.CouponItem;
+import com.happy8.args.UpdateTableInfoArgs;
+import com.happy8.args.UpdateTablePicsReqArgs;
 import com.happy8.args.UserLevelArgs;
 
 public class TestBook {
@@ -40,8 +43,12 @@ public class TestBook {
 //		List<CouponItem> reqRes = new ArrayList();
 //		reqRes.add(req);
 		
-		UserLevelArgs reqRes = new UserLevelArgs();
-		reqRes.setUserLevel(1);
+		UpdateTableInfoArgs reqRes = new UpdateTableInfoArgs();
+		reqRes.setTableId(1);
+		reqRes.setClubId(13);
+		reqRes.setPrice(12.5f);
+		reqRes.setTabName("test");
+		reqRes.setType(2);
 		String str = JSON.toJSONString(reqRes);
 		
 		System.out.println(str);
