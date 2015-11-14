@@ -38,7 +38,8 @@ public class Happy8DAO {
 	private static String sqlUserLogin = "select userid,password from ha_user where userid = ?";
 	private static String sqlRegisterUser = "insert into ha_user(userid,password) values(?,?)";
 	private static String sqlResetPassword = "update ha_user set password = ? where userid = ?";
-	private static String sqlSelectFindBuddyInfoList = "select a.bdinfoid,a.userid,a.infocontent,a.createdate,b.signature,b.avatarurl  from ha_findbuddyinfo a,ha_user b where a.userid = b.userid order by a.bdinfoid desc limit ?,?"; 
+	private static String sqlSelectFindBuddyInfoList = "select a.bdinfoid,a.userid,a.infocontent,a.createdate,b.signature,b.avatarurl  from ha_findbuddyinfo a,ha_user b where a.userid = b.userid order by a.bdinfoid desc limit ?,?";
+	private static String sqlSelectFindBuddyInfo = "select a.bdinfoid,a.userid,a.infocontent,a.createdate,b.signature,b.avatarurl  from ha_findbuddyinfo a,ha_user b where a.userid = b.userid and a.bdinfid = ?";
 	private static String sqlSelectFindBuddyCommentList = "SELECT a.commentid,a.bdinfoid,a.publishid,a.commentedid,a.commenttext,a.createdate,b.signature,b.avatarurl FROM ha_findbuddycomment a,ha_user b WHERE a.publishid = b.userid and bdinfoid IN (%s)";
 	private static String sqlSelectTimeLineCommentList = "SELECT commentid,tlinfoid,publishid,commentedid,commenttext FROM ha_timelinecomment WHERE tlinfoid IN (%s)";
 	private static String sqlSelectFriendList = "select friendid from ha_friend where userid = ?";
@@ -216,6 +217,30 @@ public class Happy8DAO {
 			return res;
 		}catch(Exception ex){
 			log.error("getFindBuddyInfoList error", ex);
+			throw ex;
+		}
+	}
+	
+	public static FindBuddyInfoItem getFindBuddyInfo(long fdInfoId) throws Exception{
+		try{
+			Object []values = { fdInfoId };
+			DataTable dt = happy8DB.executeTable(sqlSelectFindBuddyInfo, values);
+			FindBuddyInfoItem item = new FindBuddyInfoItem();
+			if(dt.getRowCount() > 0){
+				DataRow dr = dt.getRow(0);
+				item.setBdInfoId(dr.getLong("bdinfoid"));
+				item.setUserId(dr.getString("userid"));
+				item.setInfoContent(dr.getString("infocontent"));
+				item.setAvatarUrl(dr.getString("avatarurl"));
+				item.setSignature(dr.getString("signature"));
+				item.setDateTime(dateFormat(dr.getDateTime("createdate")));
+			}
+			List<FindBuddyInfoItem> list = new ArrayList<FindBuddyInfoItem>();
+			list.add(item);
+			wrapFindBuddyInfoListWithComment(list);
+			return item;
+		}catch(Exception ex){
+			log.error("getFindBuddyInfo error", ex);
 			throw ex;
 		}
 	}

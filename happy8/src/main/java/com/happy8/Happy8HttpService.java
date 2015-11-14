@@ -26,6 +26,7 @@ import com.happy8.app.coupon.DeleteCouponServlet;
 import com.happy8.app.coupon.MyCouponListServlet;
 import com.happy8.app.findbuddy.FindBuddyInfoListServlet;
 import com.happy8.app.findbuddy.FindBuddyInfoServlet;
+import com.happy8.app.findbuddy.GetFindBuddyInfoServlet;
 import com.happy8.app.findbuddy.ReplayFindBuddyInfoServlet;
 import com.happy8.app.friend.AddFriendServlet;
 import com.happy8.app.friend.AllowAddFriendServlet;
@@ -142,6 +143,7 @@ public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.cl
 		context.addServlet(new ServletHolder(new UpdateTableInfoServlet()), "/happy8/updatetableinfo");
 		context.addServlet(new ServletHolder(new DeleteTableServlet()), "/happy8/deletetable");
 		context.addServlet(new ServletHolder(new MyOwnClubListServlet()), "/happy8/myownclublist");
+		context.addServlet(new ServletHolder(new GetFindBuddyInfoServlet()), "/happy8/getfindbuddyinfo");
 		
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(port);
