@@ -42,7 +42,7 @@ public class Happy8DAO {
 	private static String sqlRegisterUser = "insert into ha_user(userid,password) values(?,?)";
 	private static String sqlResetPassword = "update ha_user set password = ? where userid = ?";
 	private static String sqlSelectFindBuddyInfoList = "select a.bdinfoid,a.userid,a.infocontent,a.createdate,b.signature,b.avatarurl  from ha_findbuddyinfo a,ha_user b where a.userid = b.userid order by a.bdinfoid desc limit ?,?";
-	private static String sqlSelectFindBuddyInfo = "select a.bdinfoid,a.userid,a.infocontent,a.createdate,b.signature,b.avatarurl  from ha_findbuddyinfo a,ha_user b where a.userid = b.userid and a.bdinfid = ?";
+	private static String sqlSelectFindBuddyInfo = "select a.bdinfoid,a.userid,a.infocontent,a.createdate,b.signature,b.avatarurl  from ha_findbuddyinfo a,ha_user b where a.userid = b.userid and a.bdinfoid = ?";
 	private static String sqlSelectFindBuddyCommentList = "SELECT a.commentid,a.bdinfoid,a.publishid,a.commentedid,a.commenttext,a.createdate,b.signature,b.avatarurl FROM ha_findbuddycomment a,ha_user b WHERE a.publishid = b.userid and bdinfoid IN (%s)";
 	private static String sqlSelectTimeLineCommentList = "SELECT commentid,tlinfoid,publishid,commentedid,commenttext FROM ha_timelinecomment WHERE tlinfoid IN (%s)";
 	private static String sqlSelectFriendList = "select friendid from ha_friend where userid = ?";

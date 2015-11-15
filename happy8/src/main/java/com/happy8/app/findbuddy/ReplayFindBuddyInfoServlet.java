@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.happy8.args.FindBuddyCommentInfo;
+import com.happy8.args.FindBuddyInfoItem;
 import com.happy8.args.FindBuddyInfoReqArgs;
 import com.happy8.args.FindBuddyInfoRspArgs;
 import com.happy8.args.ReplayFindBuddyReqArgs;
@@ -50,9 +52,14 @@ public class ReplayFindBuddyInfoServlet extends HttpServlet{
 			long id = Happy8DAO.insertFindBuddyComment(args.getBdInfoId(),args.getPublishUserId(), args.getCommentedUserId(), args.getTxtContent());
 			ReplayFindBuddyRspArgs res = new ReplayFindBuddyRspArgs();
 			res.setCommentId(id);
-			res.setItem(Happy8DAO.getFindBuddyInfo(args.getBdInfoId()));
+			FindBuddyInfoItem fd = Happy8DAO.getFindBuddyInfo(args.getBdInfoId());
+			for(FindBuddyCommentInfo info : fd.getCommentList()){
+				if(info.getCommentId() == id){
+					res.setItem(info);
+					break;
+				}
+			}
 			HttpTools.sendOkResponse(response, JSON.toJSONString(res));
-			
 		}catch(Exception ex){
 			log.error("ReplayFindBuddyInfoServlet process error",ex);
 			HttpTools.sendResponseOnlyStatusCode(response, 500);
