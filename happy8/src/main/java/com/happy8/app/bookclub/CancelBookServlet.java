@@ -19,10 +19,9 @@ public class CancelBookServlet extends HttpServlet{
 	@Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response){
 		try{
-			String userId = request.getParameter("userid");
-			long bookId = Long.parseLong(request.getParameter("bookid"));
+			long orderid = Long.parseLong(request.getParameter("orderid"));
 			
-			Happy8DAO.deleteBookClub(bookId);
+			Happy8DAO.deleteOrderById(orderid);
 			
 			HttpTools.sendResponseOnlyStatusCode(response, 200);
 		}catch(Exception ex){

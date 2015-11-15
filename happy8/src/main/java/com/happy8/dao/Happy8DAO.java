@@ -19,11 +19,14 @@ import tian.database.DataTable;
 import tian.database.Database;
 import tian.database.DatabaseManager;
 
+import com.happy8.app.findbuddy.CheckOrderItem;
 import com.happy8.args.BookClubItem;
 import com.happy8.args.ClubItem;
 import com.happy8.args.CouponItem;
 import com.happy8.args.FindBuddyCommentInfo;
 import com.happy8.args.FindBuddyInfoItem;
+import com.happy8.args.OrderItem;
+import com.happy8.args.QueryTableItem;
 import com.happy8.args.TimeLineCommentInfoItem;
 import com.happy8.args.TimeLineInfoItem;
 import com.happy8.args.UserInfoArgs;
@@ -51,17 +54,20 @@ public class Happy8DAO {
 	private static String sqlDeleteClub = "delete from ha_club where clubid = ?";
 	private static String sqlInsertFavoriteClub = "insert into ha_userfavoriteclub(userid,clubid) values(?,?)";
 	private static String sqlDeleteFavoriteClub = "delete from ha_userfavoriteclub where userid = ? and clubid = ?";
-	private static String sqlSelectFavoriteClubList = "select b.clubid,b.ownerid,b.addr,b.sale,b.phone,b.playstyle,b.longitude,b.latitude,b.clubimageurl from ha_userfavoriteclub a,ha_club b where a.userid = ? and a.clubid = b.clubid order by a.clubid desc limit ?,?";
-	private static String sqlQueryClubListByTel = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where phone like ? and status = 1 order by clubid desc limit ?,?";
-	private static String sqlSelectMyOwnClubList = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude,clubimageurl,status from ha_club where ownerid = ? order by clubid desc limit ?,?";
-	private static String sqlQueryClubListByAddr = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where addr like ? and status = 1 order by clubid desc limit ?,?";
+	private static String sqlSelectFavoriteClubList = "select b.clubid,b.ownerid,b.name,b.addr,b.sale,b.phone,b.playstyle,b.longitude,b.latitude,b.clubimageurl from ha_userfavoriteclub a,ha_club b where a.userid = ? and a.clubid = b.clubid order by a.clubid desc limit ?,?";
+	private static String sqlQueryClubListByTel = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where phone like ? and status = 1 order by clubid desc limit ?,?";
+	private static String sqlSelectMyOwnClubList = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,clubimageurl,status from ha_club where ownerid = ? order by clubid desc limit ?,?";
+	private static String sqlQueryClubListByAddr = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where addr like ? and status = 1 order by clubid desc limit ?,?";
 	private static String sqlQueryClubListByGeoHash = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where (geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ?) and status = 1  order by clubid desc limit ?,?";
 	private static String sqlInsertAddFriendReq = "insert into ha_addfriendreq(userid,friendid) values(?,?)";
 	private static String sqlDeleteAddFriendReq = "delete from ha_addfriendreq where userid = ? and friendid = ?";
 	private static String sqlInsetFriendReq = "insert into ha_friend(userid,friendid) values(?,?)";
 	private static String sqlDeleteFriend = "delete from ha_friend where userid = ? and friendid = ?";
-	private static String sqlDeleteBookClub = "delete from ha_bookclub where bookid = ?";
-	private static String sqlSelectBookClubList = "select bookid,userid,clubid,tableindex,chairindex,starttime,duration from ha_bookclub where userid = ? order by bookid desc limit ?,?";
+	private static String sqlDeleteOrderById = "delete from ha_order where orderid = ?";
+	//private static String sqlSelectBookClubList = "select bookid,userid,clubid,tableindex,chairindex,starttime,duration from ha_bookclub where userid = ? order by bookid desc limit ?,?";
+	private static String sqlSelectOrderList = "select a.orderid,a.userid,b.tableid,b.tablename,c.clubid,c.name,a.date,a.gametime,a.paystatus from ha_order a,ha_table b,ha_club c where a.tableid = b.tableid and b.clubid = c.clubid and a.userid = ? and (a.paystatus = 1 or a.createdate > ?) order by a.orderid desc limit ?,?";
+	private static String sqlSelectTablesByClubId = "select a.tableid,a.tablename,a.price,a.type,a.url from ha_table a where a.clubid = ? by a.clubid desc limit ?,?";
+	
 	private static String sqlIsUserSuperAdimin = "select userid from ha_user where userid = ? and usertype = 4";
 	private static String sqlInsertCoupon = "insert into ha_coupon(couponid,type,discount,value,startamout,expiretime) values (?,?,?,?,?,?)";
 	private static String sqlInsertUserCoupon = "insert into ha_usercoupon(userid,consumecouponid,createdate) values(?,?,?) ON DUPLICATE KEY UPDATE createdate = ?";
@@ -79,6 +85,9 @@ public class Happy8DAO {
 	private static String sqlSelectUserLevel = "select usertype,userstats from ha_user where userid = ?";
 	private static String sqlUpdateUserStatus = "update ha_user set userstatus = ? where userid = ?";
 	private static String sqlDeleteTable = "delete from ha_table where tableid = ?";
+	private static String sqlSelectOrderByDate = "select paystatus,createdate from ha_order where tableid = ? and date = ? and gametime = ?";
+	private static String sqlDeleteNoPayOrder = "delete from ha_order where tableid = ? and date = ? and gametime = ?";
+	private static String sqlSelectOrderStatus = "select a.userid,a.createdate,a.paystatus,b.signature from ha_order a,ha_user b where a.userid = b.userid and a.tableid = ? and and date = ? and gametime = ?";
 	
 	public static void initialize() throws Exception{
 		Properties p = new Properties();
@@ -553,6 +562,7 @@ public class Happy8DAO {
 			for(DataRow dr : dt.getRows()){
 				ClubItem item = new ClubItem();
 				item.setAddr(dr.getString("addr"));
+				item.setName(dr.getString("name"));
 				item.setClubId(dr.getInt("clubid"));
 				item.setLatitude(dr.getDouble("latitude"));
 				item.setLongitude(dr.getDouble("longitude"));
@@ -579,6 +589,7 @@ public class Happy8DAO {
 				ClubItem item = new ClubItem();
 				item.setAddr(dr.getString("addr"));
 				item.setClubId(dr.getInt("clubid"));
+				item.setName(dr.getString("name"));
 				item.setLatitude(dr.getDouble("latitude"));
 				item.setLongitude(dr.getDouble("longitude"));
 				item.setOwnerId(dr.getString("ownerid"));
@@ -611,6 +622,7 @@ public class Happy8DAO {
 			for(DataRow dr : dt.getRows()){
 				ClubItem item = new ClubItem();
 				item.setAddr(dr.getString("addr"));
+				item.setName(dr.getString("name"));
 				item.setClubId(dr.getInt("clubid"));
 				item.setLatitude(dr.getDouble("latitude"));
 				item.setLongitude(dr.getDouble("longitude"));
@@ -642,6 +654,7 @@ public class Happy8DAO {
 			for(DataRow dr : dt.getRows()){
 				ClubItem item = new ClubItem();
 				item.setAddr(dr.getString("addr"));
+				item.setName(dr.getString("name"));
 				item.setClubId(dr.getInt("clubid"));
 				item.setLatitude(dr.getDouble("latitude"));
 				item.setLongitude(dr.getDouble("longitude"));
@@ -710,36 +723,103 @@ public class Happy8DAO {
 		}
 	}
 	
-	public static void deleteBookClub(long bookId) throws Exception{
+	public static long insertOrder(String userId,int tableId,Date date,int gameTime) throws Exception{
 		try{
-			Object []values = { bookId };
-			happy8DB.executeNonQuery(sqlDeleteBookClub, values);
+			String []params = {"@userid","@tableid","@date","@gametime"};
+			Object []values = {userId,tableId,date,gameTime};
+			DataTable dt = happy8DB.spExecuteTable("USP_InsertOrder", params, values);
+			return dt.getRow(0).getLong(1);
 		}catch(Exception ex){
-			log.error("deleteBookClub error", ex);
+			log.error("insertOrder error", ex);
 			throw ex;
 		}
 	}
 	
-	public static List<BookClubItem> getBookClubList(String userId,int start,int end) throws Exception{
+	public static void deleteOrderById(long orderId) throws Exception{
 		try{
-			List<BookClubItem> res = new ArrayList<BookClubItem>();
+			Object []values = { orderId };
+			happy8DB.executeNonQuery(sqlDeleteOrderById, values);
+		}catch(Exception ex){
+			log.error("deleteOrderById error", ex);
+			throw ex;
+		}
+	}
+	
+	public static List<OrderItem> getOrderList(String userId,Date date,int start,int end) throws Exception{
+		try{
+			List<OrderItem> res = new ArrayList<OrderItem>();
 			int count = end - start;
-			Object []values = {userId,start,count};
-			DataTable dt = happy8DB.executeTable(sqlSelectBookClubList, values);
+			Object []values = {userId,date,start,count};
+			DataTable dt = happy8DB.executeTable(sqlSelectOrderList, values);
 			for(DataRow dr : dt.getRows()){
-				BookClubItem item = new BookClubItem();
+				OrderItem item = new OrderItem();
 				item.setUserId(dr.getString("userid"));
-				item.setBookId(dr.getLong("bookid"));
-				item.setChairIndex(dr.getInt("chairindex"));
+				item.setClubName(dr.getString("name"));
+				item.setDate(StringUtils.Date2String(dr.getDateTime("date")));
 				item.setClubId(dr.getInt("clubid"));
-				item.setDuration(dr.getInt("duration"));
-				item.setStartTime(dateFormat(dr.getDateTime("starttime")));
-				item.setTableIndex(dr.getInt("tableindex"));
+				item.setGameTime(dr.getInt("gametime"));
+				item.setOrderId(dr.getLong("orderid"));
+				item.setTableId(dr.getInt("tableid"));
+				item.setTableName(dr.getString("tablename"));
+				item.setStatus(dr.getInt("paystatus"));
 				res.add(item);
 			}
 			return res;
 		}catch(Exception ex){
-			log.error("getBookClubList error", ex);
+			log.error("getOrderList error", ex);
+			throw ex;
+		}
+	}
+	
+	public static List<QueryTableItem> getQueryTableList(Date date,int gameTime,int clubId,int start,int end) throws Exception{
+		try{
+			List<QueryTableItem> res = new ArrayList<QueryTableItem>();
+			int count = end - start;
+			Object []values = {clubId,start,count};
+			DataTable dt = happy8DB.executeTable(sqlSelectTablesByClubId, values);
+			for(DataRow dr : dt.getRows()){
+				QueryTableItem item = new QueryTableItem();
+				item.setTableId(dr.getInt("tableid"));
+				item.setTableName(dr.getString("tablename"));
+				item.setType(dr.getInt("type"));
+				item.setPrice(dr.getFloat("price"));
+				item.setUrl(dr.getString("url"));
+				setQueryItemStatus(item, date, gameTime, item.getTableId());
+				res.add(item);
+			}
+			return res;
+		}catch(Exception ex){
+			log.error("getQueryTableList error", ex);
+			throw ex;
+		}
+	}
+	
+	private static void setQueryItemStatus(QueryTableItem item,Date date,int gameTime,int tableId) throws Exception{
+		Object []values = { tableId,date,gameTime };
+		try{
+			DataTable dt = happy8DB.executeTable(sqlSelectOrderStatus, values);
+			if(dt.getRowCount() == 0)
+				return;
+			
+			String userId = dt.getRow(0).getString("userid");
+			Date createDate = StringUtils.parse2Date(dt.getRow(0).getString("createdate"));
+			String signature = dt.getRow(0).getString("signature");
+			int payStatus = dt.getRow(0).getInt("paystatus");
+			
+			if(payStatus == 1){
+				item.setOrderStatus(1);
+				item.setUserId(userId);
+				item.setSignature(signature);
+			}
+			
+			Date now = new Date();
+			if(now.getTime() - createDate.getTime() < 15 * 60 * 1000){
+				item.setOrderStatus(1);
+				item.setUserId(userId);
+				item.setSignature(signature);
+			}
+		}catch(Exception ex){
+			log.error("setQueryItemStatus error", ex);
 			throw ex;
 		}
 	}
@@ -938,7 +1018,45 @@ public class Happy8DAO {
 			log.error("getUserLevel error", ex);
 			throw ex;
 		}
-		
+	}
+	
+	public static CheckOrderItem getCheckOrder(int tableId,Date date,int gameTime) throws Exception{
+		try{
+			CheckOrderItem args = new CheckOrderItem();
+			Object []values = { tableId,date,gameTime };
+			DataTable dt = happy8DB.executeTable(sqlSelectOrderByDate, values);
+			if(dt.getRowCount() == 0){
+				return null;
+			}
+			args.setStatus(dt.getRow(0).getInt("paystatus"));
+			args.setCreateDate(dt.getRow(0).getDateTime("createdate"));
+			return args;
+		}catch(Exception ex){
+			log.error("getCheckOrder error", ex);
+			throw ex;
+		}
+	}
+	
+	public static void deleteNoPayOrder(int tableId,Date date,int gameTime) throws Exception{
+		Object []values = { tableId,date,gameTime };
+		try{
+			happy8DB.executeNonQuery(sqlDeleteNoPayOrder, values);
+		}catch(Exception ex){
+			log.error("deleteNoPayOrder error", ex);
+			throw ex;
+		}
+	}
+	
+	public static long insertOrder(int tableId,Date date,int gameTime,String userId) throws Exception{
+		try{
+			String []params = {"@userid","@tableid","date","gametime"};
+			Object []values = {userId,tableId,date,gameTime};
+			DataTable dt = happy8DB.spExecuteTable("USP_InsertOrder", params, values);
+			return dt.getRow(0).getLong(1);
+		}catch(Exception ex){
+			log.error("insertOrder error", ex);
+			throw ex;
+		}
 	}
 	
 	public static void updateUserStatus(String userId,int userStatus) throws Exception{
@@ -952,7 +1070,7 @@ public class Happy8DAO {
 	}
 	
 	private static String dateFormat(Date date){
-		DateFormat format1 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		DateFormat format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return format1.format(date);
 	}
 }

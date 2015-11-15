@@ -6,6 +6,8 @@ package com.happy8.args;
  */
 public class ReplayFindBuddyRspArgs {
 	private long commentId;
+	
+	private FindBuddyInfoItem item;
 
 	public long getCommentId() {
 		return commentId;
@@ -13,5 +15,13 @@ public class ReplayFindBuddyRspArgs {
 
 	public void setCommentId(long commentId) {
 		this.commentId = commentId;
+	}
+
+	public FindBuddyInfoItem getItem() {
+		return item;
+	}
+
+	public void setItem(FindBuddyInfoItem item) {
+		this.item = item;
 	}
 }

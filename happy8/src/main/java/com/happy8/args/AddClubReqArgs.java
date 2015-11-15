@@ -7,6 +7,7 @@ package com.happy8.args;
 public class AddClubReqArgs {
 	private String ownerId;
 	private String addr;
+	private String name;
 	private String phone;
 	private double sale;
 	private String palyStyle;
@@ -14,6 +15,12 @@ public class AddClubReqArgs {
 	private double latitude;
 	private String clubImageUrl;
 	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	public double getLongitude() {
 		return longitude;
 	}

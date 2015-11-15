@@ -12,16 +12,17 @@ import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
 import com.happy8.args.OrderItem;
+import com.happy8.args.QueryTableItem;
 import com.happy8.dao.Happy8DAO;
 import com.happy8.utils.HttpTools;
 import com.happy8.utils.StringUtils;
 
-public class BookClubListServlet extends HttpServlet{
+public class QueryTablesServlet extends HttpServlet{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static Logger log = LoggerFactory.getLogger(BookClubListServlet.class);
+	private static Logger log = LoggerFactory.getLogger(QueryTablesServlet.class);
 	@Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response){
 		try{
@@ -35,20 +36,18 @@ public class BookClubListServlet extends HttpServlet{
 				HttpTools.sendResponseOnlyStatusCode(response, 400);
 				return;
 			}
-			String userId = request.getParameter("userid");
-			if(StringUtils.isNullOrEmpty(userId)){
-				log.error("req userid is null");
-				HttpTools.sendResponseOnlyStatusCode(response, 400);
-				return;
-			}
+			int clubId = Integer.valueOf(request.getParameter("clubid"));
+			
+			Date date = StringUtils.parse2Date(request.getParameter("date"));
+			int gameTime = Integer.valueOf(request.getParameter("gametime"));
 			
 			Date now = new Date();
 			long time = now.getTime() - 15 * 60 * 1000;
 			Date use = new Date(time);
-			List<OrderItem> res = Happy8DAO.getOrderList(userId , use, start, end);
+			List<QueryTableItem> res = Happy8DAO.getQueryTableList(date,gameTime,clubId,start,end);
 			HttpTools.sendOkResponse(response, JSON.toJSONString(res));
 		}catch(Exception ex){
-			log.error("BookClubListServlet process error",ex);
+			log.error("QueryTablesServlet process error",ex);
 			HttpTools.sendResponseOnlyStatusCode(response, 500);
 		}
 	}

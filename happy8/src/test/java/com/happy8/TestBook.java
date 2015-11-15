@@ -8,6 +8,8 @@ import com.alibaba.fastjson.JSON;
 import com.happy8.args.AddTableReqArgs;
 import com.happy8.args.ConsumeCouponReqArgs;
 import com.happy8.args.CouponItem;
+import com.happy8.args.OrderItem;
+import com.happy8.args.QueryTableItem;
 import com.happy8.args.UpdateTableInfoArgs;
 import com.happy8.args.UpdateTablePicsReqArgs;
 import com.happy8.args.UserLevelArgs;
@@ -42,13 +44,16 @@ public class TestBook {
 //		
 //		List<CouponItem> reqRes = new ArrayList();
 //		reqRes.add(req);
-		
-		UpdateTableInfoArgs reqRes = new UpdateTableInfoArgs();
-		reqRes.setTableId(1);
-		reqRes.setClubId(13);
-		reqRes.setPrice(12.5f);
-		reqRes.setTabName("test");
-		reqRes.setType(2);
+		ArrayList<QueryTableItem> reqRes =new ArrayList<QueryTableItem>();
+		QueryTableItem item = new QueryTableItem();
+		item.setOrderStatus(1);
+		item.setPrice(12.5f);
+		item.setSignature("tet");
+		item.setType(2);
+		item.setTableId(23);
+		item.setTableName("麻将");
+		item.setUserId("13500000000");
+		reqRes.add(item);
 		String str = JSON.toJSONString(reqRes);
 		
 		System.out.println(str);

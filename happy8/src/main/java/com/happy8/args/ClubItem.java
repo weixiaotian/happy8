@@ -7,6 +7,7 @@ package com.happy8.args;
 public class ClubItem {
 	private int clubId;
 	private String ownerId;
+	private String name;
 	private String addr;
 	private String phone;
 	private double sale;
@@ -76,4 +77,11 @@ public class ClubItem {
 	public void setStatus(int status) {
 		this.status = status;
 	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 }

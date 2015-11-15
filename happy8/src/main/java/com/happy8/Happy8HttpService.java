@@ -11,8 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.happy8.app.bookclub.BookClubListServlet;
-import com.happy8.app.bookclub.BookClubServlet;
+import com.happy8.app.bookclub.OrderTableServlet;
 import com.happy8.app.bookclub.CancelBookServlet;
+import com.happy8.app.bookclub.QueryTablesServlet;
 import com.happy8.app.club.FavoriteClubListServlet;
 import com.happy8.app.club.MyOwnClubListServlet;
 import com.happy8.app.club.NearbyClubListServlet;
@@ -122,7 +123,7 @@ public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.cl
 		context.addServlet(new ServletHolder(new DeleteFriendServlet()), "/happy8/deletefriend");
 		context.addServlet(new ServletHolder(new AllowAddFriendServlet()), "/happy8/allowaddfriend");
 		
-		context.addServlet(new ServletHolder(new BookClubServlet()), "/happy8/bookclub");
+		context.addServlet(new ServletHolder(new OrderTableServlet()), "/happy8/bookclub");
 		context.addServlet(new ServletHolder(new CancelBookServlet()), "/happy8/cancelbook");
 		context.addServlet(new ServletHolder(new BookClubListServlet()), "/happy8/bookclublist");
 		
@@ -144,6 +145,9 @@ public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.cl
 		context.addServlet(new ServletHolder(new DeleteTableServlet()), "/happy8/deletetable");
 		context.addServlet(new ServletHolder(new MyOwnClubListServlet()), "/happy8/myownclublist");
 		context.addServlet(new ServletHolder(new GetFindBuddyInfoServlet()), "/happy8/getfindbuddyinfo");
+		
+		context.addServlet(new ServletHolder(new OrderTableServlet()), "/happy8/ordertable");
+		context.addServlet(new ServletHolder(new QueryTablesServlet()), "/happy8/querytables");
 		
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(port);

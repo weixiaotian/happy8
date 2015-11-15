@@ -116,6 +116,10 @@ public class ProcessClubServlet extends HttpServlet{
 			sb.append(", addr = ? ");
 			values.add(args.getAddr());
 		}
+		if(!StringUtils.isNullOrEmpty(args.getName())){
+			sb.append(", name = ? ");
+			values.add(args.getName());
+		}
 		if(!StringUtils.isNullOrEmpty(args.getOwnerId())){
 			sb.append(", ownerid = ? ");
 			values.add(args.getOwnerId());

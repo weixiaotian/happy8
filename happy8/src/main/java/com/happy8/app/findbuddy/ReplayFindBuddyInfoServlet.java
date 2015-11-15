@@ -49,7 +49,8 @@ public class ReplayFindBuddyInfoServlet extends HttpServlet{
 			
 			long id = Happy8DAO.insertFindBuddyComment(args.getBdInfoId(),args.getPublishUserId(), args.getCommentedUserId(), args.getTxtContent());
 			ReplayFindBuddyRspArgs res = new ReplayFindBuddyRspArgs();
-			res.setCommentId(id);;
+			res.setCommentId(id);
+			res.setItem(Happy8DAO.getFindBuddyInfo(args.getBdInfoId()));
 			HttpTools.sendOkResponse(response, JSON.toJSONString(res));
 			
 		}catch(Exception ex){

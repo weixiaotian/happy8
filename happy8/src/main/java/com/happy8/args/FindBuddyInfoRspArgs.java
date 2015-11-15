@@ -6,7 +6,9 @@ package com.happy8.args;
  */
 public class FindBuddyInfoRspArgs {
 	private long bdInfoId;
-
+	
+	private FindBuddyInfoItem fdItem;
+	
 	public long getBdInfoId() {
 		return bdInfoId;
 	}
@@ -14,4 +16,14 @@ public class FindBuddyInfoRspArgs {
 	public void setBdInfoId(long bdInfoId) {
 		this.bdInfoId = bdInfoId;
 	}
+
+	public FindBuddyInfoItem getFdItem() {
+		return fdItem;
+	}
+
+	public void setFdItem(FindBuddyInfoItem fdItem) {
+		this.fdItem = fdItem;
+	}
+	
+	
 }
