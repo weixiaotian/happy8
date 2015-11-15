@@ -53,10 +53,12 @@ public class ReplayFindBuddyInfoServlet extends HttpServlet{
 			ReplayFindBuddyRspArgs res = new ReplayFindBuddyRspArgs();
 			res.setCommentId(id);
 			FindBuddyInfoItem fd = Happy8DAO.getFindBuddyInfo(args.getBdInfoId());
-			for(FindBuddyCommentInfo info : fd.getCommentList()){
-				if(info.getCommentId() == id){
-					res.setItem(info);
-					break;
+			if(fd !=null && fd.getCommentList() !=null){
+				for(FindBuddyCommentInfo info : fd.getCommentList()){
+					if(info.getCommentId() == id){
+						res.setItem(info);
+						break;
+					}
 				}
 			}
 			HttpTools.sendOkResponse(response, JSON.toJSONString(res));
