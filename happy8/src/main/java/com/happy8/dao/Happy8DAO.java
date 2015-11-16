@@ -82,7 +82,7 @@ public class Happy8DAO {
 	private static String sqlInsertUserRate = "insert into ha_userclubrate(clubid,userid,rate) values(?,?,?)  ON DUPLICATE KEY UPDATE  rate = ?";
 	private static String sqlSelectSumRateAndCount = "select sum(rate) sum,count(*) count from ha_userclubrate where clubid = ?";
 	private static String sqlUpdateClubRate = "update ha_club set rate = ? where clubid = ?";
-	private static String sqlSelectUserLevel = "select usertype,userstats from ha_user where userid = ?";
+	private static String sqlSelectUserLevel = "select usertype,userstatus from ha_user where userid = ?";
 	private static String sqlUpdateUserStatus = "update ha_user set userstatus = ? where userid = ?";
 	private static String sqlDeleteTable = "delete from ha_table where tableid = ?";
 	private static String sqlSelectOrderByDate = "select paystatus,createdate from ha_order where tableid = ? and date = ? and gametime = ?";

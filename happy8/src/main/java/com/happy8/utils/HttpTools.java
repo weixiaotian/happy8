@@ -2,6 +2,7 @@ package com.happy8.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -12,6 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.alibaba.fastjson.JSON;
+import com.happy8.args.StatusCode;
 
 public class HttpTools {
 	
@@ -92,6 +96,17 @@ public class HttpTools {
 	}
 	
 	public static void sendResponseOnlyStatusCode(HttpServletResponse response,int statusCode){
-		response.setStatus(statusCode);
+		try{
+			StatusCode code = new StatusCode();
+			code.setStatusCode(statusCode);
+			String body = JSON.toJSONString(code);
+			byte []bodyBytes = body.getBytes("utf-8");
+			response.setStatus(200);
+			response.setContentType("application/json");
+			response.setContentLength(bodyBytes.length);
+			response.getOutputStream().write(bodyBytes);
+		}catch(Exception ex){
+			LOGGER.error("sendResponseOnlyStatusCode error", ex);
+		}
 	}
 }
