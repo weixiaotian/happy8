@@ -21,6 +21,7 @@ import com.happy8.app.club.ProcessClubServlet;
 import com.happy8.app.club.ProcessFavoriteServlet;
 import com.happy8.app.club.QueryClubListServlet;
 import com.happy8.app.club.RateClubServlet;
+import com.happy8.app.club.UnApproveClubListServlet;
 import com.happy8.app.coupon.AddCouponServlet;
 import com.happy8.app.coupon.ConsumeCouponServlet;
 import com.happy8.app.coupon.DeleteCouponServlet;
@@ -148,6 +149,8 @@ public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.cl
 		
 		context.addServlet(new ServletHolder(new OrderTableServlet()), "/happy8/ordertable");
 		context.addServlet(new ServletHolder(new QueryTablesServlet()), "/happy8/querytables");
+		
+		context.addServlet(new ServletHolder(new UnApproveClubListServlet()), "/happy8/unapproveclub");
 		
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(port);

@@ -55,6 +55,7 @@ public class Happy8DAO {
 	private static String sqlInsertFavoriteClub = "insert into ha_userfavoriteclub(userid,clubid) values(?,?)";
 	private static String sqlDeleteFavoriteClub = "delete from ha_userfavoriteclub where userid = ? and clubid = ?";
 	private static String sqlSelectFavoriteClubList = "select b.clubid,b.ownerid,b.name,b.addr,b.sale,b.phone,b.playstyle,b.longitude,b.latitude,b.clubimageurl from ha_userfavoriteclub a,ha_club b where a.userid = ? and a.clubid = b.clubid order by a.clubid desc limit ?,?";
+	private static String sqlSelectUnApproveClubList = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where status = 0 order by clubid desc limit ?,?";
 	private static String sqlQueryClubListByTel = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where phone like ? and status = 1 order by clubid desc limit ?,?";
 	private static String sqlSelectMyOwnClubList = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,clubimageurl,status from ha_club where ownerid = ? order by clubid desc limit ?,?";
 	private static String sqlQueryClubListByAddr = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where addr like ? and status = 1 order by clubid desc limit ?,?";
@@ -559,6 +560,32 @@ public class Happy8DAO {
 			int count = end - start ;
 			Object []values = {userId,start,count};
 			DataTable dt = happy8DB.executeTable(sqlSelectFavoriteClubList, values);
+			for(DataRow dr : dt.getRows()){
+				ClubItem item = new ClubItem();
+				item.setAddr(dr.getString("addr"));
+				item.setName(dr.getString("name"));
+				item.setClubId(dr.getInt("clubid"));
+				item.setLatitude(dr.getDouble("latitude"));
+				item.setLongitude(dr.getDouble("longitude"));
+				item.setOwnerId(dr.getString("ownerid"));
+				item.setPlayStyle(dr.getString("playstyle"));
+				item.setSale(dr.getDouble("sale"));
+				item.setClubImageUrl(dr.getString("clubimageurl"));
+				res.add(item);
+			}
+			return res;
+		}catch(Exception ex){
+			log.error("getTimeLineList error", ex);
+			throw ex;
+		}
+	}
+	
+	public static List<ClubItem> getUnApproveClubList(int start,int end) throws Exception{
+		try{
+			List<ClubItem> res = new ArrayList<ClubItem>();
+			int count = end - start ;
+			Object []values = {start,count};
+			DataTable dt = happy8DB.executeTable(sqlSelectUnApproveClubList, values);
 			for(DataRow dr : dt.getRows()){
 				ClubItem item = new ClubItem();
 				item.setAddr(dr.getString("addr"));
