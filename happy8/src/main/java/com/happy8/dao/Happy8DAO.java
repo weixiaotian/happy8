@@ -570,6 +570,7 @@ public class Happy8DAO {
 				item.setOwnerId(dr.getString("ownerid"));
 				item.setPlayStyle(dr.getString("playstyle"));
 				item.setSale(dr.getDouble("sale"));
+				item.setPhone(dr.getString("phone"));
 				item.setClubImageUrl(dr.getString("clubimageurl"));
 				res.add(item);
 			}
@@ -595,6 +596,7 @@ public class Happy8DAO {
 				item.setLongitude(dr.getDouble("longitude"));
 				item.setOwnerId(dr.getString("ownerid"));
 				item.setPlayStyle(dr.getString("playstyle"));
+				item.setPhone(dr.getString("phone"));
 				item.setSale(dr.getDouble("sale"));
 				item.setClubImageUrl(dr.getString("clubimageurl"));
 				res.add(item);
@@ -621,6 +623,7 @@ public class Happy8DAO {
 				item.setLongitude(dr.getDouble("longitude"));
 				item.setOwnerId(dr.getString("ownerid"));
 				item.setPlayStyle(dr.getString("playstyle"));
+				item.setPhone(dr.getString("phone"));
 				item.setSale(dr.getDouble("sale"));
 				item.setClubImageUrl(dr.getString("clubimageurl"));
 				item.setStatus(dr.getInt("status"));
@@ -654,6 +657,7 @@ public class Happy8DAO {
 				item.setLatitude(dr.getDouble("latitude"));
 				item.setLongitude(dr.getDouble("longitude"));
 				item.setOwnerId(dr.getString("ownerid"));
+				item.setPhone(dr.getString("phone"));
 				item.setPlayStyle(dr.getString("playstyle"));
 				item.setSale(dr.getDouble("sale"));
 				item.setClubImageUrl(dr.getString("clubimageurl"));
@@ -686,6 +690,7 @@ public class Happy8DAO {
 				item.setLatitude(dr.getDouble("latitude"));
 				item.setLongitude(dr.getDouble("longitude"));
 				item.setOwnerId(dr.getString("ownerid"));
+				item.setPhone(dr.getString("phone"));
 				item.setPlayStyle(dr.getString("playstyle"));
 				item.setSale(dr.getDouble("sale"));
 				item.setClubImageUrl(dr.getString("clubimageurl"));

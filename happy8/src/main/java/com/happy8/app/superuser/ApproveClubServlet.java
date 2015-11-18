@@ -29,6 +29,7 @@ public class ApproveClubServlet extends HttpServlet{
     protected void doPost(HttpServletRequest request, HttpServletResponse response){
 		try{
 			String body = HttpTools.getRequestBody(request);
+			log.info("req body is" + body);
 			ApproveClubReqArgs args = null;
 			try{
 				args = JSON.parseObject(body, ApproveClubReqArgs.class);
@@ -49,7 +50,7 @@ public class ApproveClubServlet extends HttpServlet{
 				return;
 			}
 			
-			if(args.getAction() != 0 && args.getAction() != 1){
+			if(args.getAction() != 0 && args.getAction() != 1 && args.getAction() != 2){
 				log.error("action error " + args.getAction());
 				HttpTools.sendResponseOnlyStatusCode(response, 400);
 				return;
@@ -61,7 +62,7 @@ public class ApproveClubServlet extends HttpServlet{
 				HttpTools.sendResponseOnlyStatusCode(response, 405);
 				return;
 			}
-			
+			log.info(String.format("clubid:% action:%s", args.getUserId(),args.getAction()));
 			Happy8DAO.updateClubStatus(args.getClubId(), args.getAction());
 			HttpTools.sendResponseOnlyStatusCode(response, 200);
 		}catch(Exception ex){
