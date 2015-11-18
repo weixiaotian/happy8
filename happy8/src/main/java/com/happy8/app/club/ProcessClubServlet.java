@@ -76,7 +76,7 @@ public class ProcessClubServlet extends HttpServlet{
 			return;
 		}
 		String geohash = GeoHashTool.generateGeoHashCode(args.getLongitude(), args.getLatitude());
-		int id = Happy8DAO.insertClub(args.getOwnerId(), args.getAddr(), args.getPhone(), args.getPalyStyle(),
+		int id = Happy8DAO.insertClub(args.getOwnerId(), args.getAddr(),args.getName(), args.getPhone(), args.getPalyStyle(),
 				args.getSale(), args.getLongitude(), args.getLatitude(), geohash,args.getClubImageUrl());
 		
 		AddClubRspArgs res = new AddClubRspArgs();

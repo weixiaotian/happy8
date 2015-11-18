@@ -499,10 +499,10 @@ public class Happy8DAO {
 		}
 	}
 	
-	public static int insertClub(String ownerId,String addr,String phone,String playStyle,double sale,double longitude,double latitude,String geohash,String clubImageUrl) throws Exception{
+	public static int insertClub(String ownerId,String addr,String name,String phone,String playStyle,double sale,double longitude,double latitude,String geohash,String clubImageUrl) throws Exception{
 		try{
-			String []params = {"@ownerid","@addr","@phone","@playstyle","@sale","@longitude","@latitude","@geohash","@clubimageurl"};
-			Object []values = {ownerId,addr,phone,playStyle,sale,longitude,latitude,geohash,clubImageUrl};
+			String []params = {"@ownerid","@addr","@name","@phone","@playstyle","@sale","@longitude","@latitude","@geohash","@clubimageurl"};
+			Object []values = {ownerId,addr,name,phone,playStyle,sale,longitude,latitude,geohash,clubImageUrl};
 			DataTable dt = happy8DB.spExecuteTable("USP_InsertClub", params, values);
 			return dt.getRow(0).getInt(1);
 		}catch(Exception ex){
