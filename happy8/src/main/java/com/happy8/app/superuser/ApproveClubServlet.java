@@ -62,7 +62,7 @@ public class ApproveClubServlet extends HttpServlet{
 				HttpTools.sendResponseOnlyStatusCode(response, 405);
 				return;
 			}
-			log.info(String.format("clubid:% action:%s", args.getUserId(),args.getAction()));
+			log.info(String.format("clubid:%s action:%s", args.getUserId(),args.getAction()));
 			Happy8DAO.updateClubStatus(args.getClubId(), args.getAction());
 			HttpTools.sendResponseOnlyStatusCode(response, 200);
 		}catch(Exception ex){
