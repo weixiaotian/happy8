@@ -1097,7 +1097,7 @@ public class Happy8DAO {
 	
 	public static void updateUserStatus(String userId,int userStatus) throws Exception{
 		try{
-			Object []values = { userId,userStatus };
+			Object []values = { userStatus,userId };
 			happy8DB.executeNonQuery(sqlUpdateUserStatus, values);
 		}catch(Exception ex){
 			log.error("updateUserStatus error", ex);
