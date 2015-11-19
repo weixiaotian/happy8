@@ -976,7 +976,7 @@ public class Happy8DAO {
 	
 	public static void updateClubStatus(int clubId,int status) throws Exception{
 		try{
-			Object []values = { clubId,status };
+			Object []values = { status, clubId};
 			happy8DB.executeNonQuery(sqlUpdateClubStatus, values);
 		}catch(Exception ex){
 			log.error("updateClubStatus error", ex);
