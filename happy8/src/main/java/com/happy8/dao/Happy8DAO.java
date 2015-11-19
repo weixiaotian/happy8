@@ -43,7 +43,7 @@ public class Happy8DAO {
 	private static String sqlResetPassword = "update ha_user set password = ? where userid = ?";
 	private static String sqlSelectFindBuddyInfoList = "select a.bdinfoid,a.userid,a.infocontent,a.createdate,b.signature,b.avatarurl  from ha_findbuddyinfo a,ha_user b where a.userid = b.userid order by a.bdinfoid desc limit ?,?";
 	private static String sqlSelectFindBuddyInfo = "select a.bdinfoid,a.userid,a.infocontent,a.createdate,b.signature,b.avatarurl  from ha_findbuddyinfo a,ha_user b where a.userid = b.userid and a.bdinfoid = ?";
-	private static String sqlSelectFindBuddyCommentList = "SELECT a.commentid,a.bdinfoid,a.publishid,a.commentedid,a.commenttext,a.createdate,b.signature,b.avatarurl FROM ha_findbuddycomment a,ha_user b WHERE a.publishid = b.userid and bdinfoid IN (%s)";
+	private static String sqlSelectFindBuddyCommentList = "SELECT a.commentid,a.bdinfoid,a.publishid,a.commentedid,a.commenttext,a.createdate,b.signature,b.avatarurl FROM ha_findbuddycomment a,ha_user b WHERE a.publishid = b.userid and bdinfoid IN (%s) order by a.commentid desc";
 	private static String sqlSelectTimeLineCommentList = "SELECT commentid,tlinfoid,publishid,commentedid,commenttext FROM ha_timelinecomment WHERE tlinfoid IN (%s)";
 	private static String sqlSelectFriendList = "select friendid from ha_friend where userid = ?";
 	private static String sqlInsertUserTimeLine = "insert into ha_usertimeline values(?,?)";
@@ -59,7 +59,7 @@ public class Happy8DAO {
 	private static String sqlQueryClubListByTel = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where phone like ? and status = 1 order by clubid desc limit ?,?";
 	private static String sqlSelectMyOwnClubList = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,clubimageurl,status from ha_club where ownerid = ? order by clubid desc limit ?,?";
 	private static String sqlQueryClubListByAddr = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where addr like ? and status = 1 order by clubid desc limit ?,?";
-	private static String sqlQueryClubListByGeoHash = "select clubid,ownerid,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where (geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ?) and status = 1  order by clubid desc limit ?,?";
+	private static String sqlQueryClubListByGeoHash = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,clubimageurl from ha_club where (geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ?) and status = 1  order by clubid desc limit ?,?";
 	private static String sqlInsertAddFriendReq = "insert into ha_addfriendreq(userid,friendid) values(?,?)";
 	private static String sqlDeleteAddFriendReq = "delete from ha_addfriendreq where userid = ? and friendid = ?";
 	private static String sqlInsetFriendReq = "insert into ha_friend(userid,friendid) values(?,?)";
