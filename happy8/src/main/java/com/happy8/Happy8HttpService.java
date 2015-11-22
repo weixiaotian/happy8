@@ -36,6 +36,9 @@ import com.happy8.app.friend.DeleteFriendServlet;
 import com.happy8.app.superuser.ApproveClubServlet;
 import com.happy8.app.superuser.DeleteFindBuddyInfoServlet;
 import com.happy8.app.superuser.DeleteFindBuddyReplyServlet;
+import com.happy8.app.superuser.DeleteSystemNotifyServlet;
+import com.happy8.app.superuser.GetSystemNotifyServlet;
+import com.happy8.app.superuser.PublishSystemNotifyServlet;
 import com.happy8.app.table.AddTableServlet;
 import com.happy8.app.table.DeleteTableServlet;
 import com.happy8.app.table.UpdateTableInfoServlet;
@@ -64,6 +67,7 @@ public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.cl
 			}
 			init();
 			intWebService();
+			SystemNotifySender.start();
 			if(LOGGER.isInfoEnabled()){
 				LOGGER.info("FriendCircleWebService start ok");
 			}
@@ -151,6 +155,10 @@ public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.cl
 		context.addServlet(new ServletHolder(new QueryTablesServlet()), "/happy8/querytables");
 		
 		context.addServlet(new ServletHolder(new UnApproveClubListServlet()), "/happy8/unapproveclub");
+		
+		context.addServlet(new ServletHolder(new DeleteSystemNotifyServlet()), "/happy8/deletesystemnotify");
+		context.addServlet(new ServletHolder(new GetSystemNotifyServlet()), "/happy8/getsystemnotify");
+		context.addServlet(new ServletHolder(new PublishSystemNotifyServlet()), "/happy8/publishsystemnotify");
 		
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(port);

@@ -27,6 +27,7 @@ import com.happy8.args.FindBuddyCommentInfo;
 import com.happy8.args.FindBuddyInfoItem;
 import com.happy8.args.OrderItem;
 import com.happy8.args.QueryTableItem;
+import com.happy8.args.SystemNotifyItem;
 import com.happy8.args.TimeLineCommentInfoItem;
 import com.happy8.args.TimeLineInfoItem;
 import com.happy8.args.UserInfoArgs;
@@ -89,6 +90,9 @@ public class Happy8DAO {
 	private static String sqlSelectOrderByDate = "select paystatus,createdate from ha_order where tableid = ? and date = ? and gametime = ?";
 	private static String sqlDeleteNoPayOrder = "delete from ha_order where tableid = ? and date = ? and gametime = ?";
 	private static String sqlSelectOrderStatus = "select a.userid,a.createdate,a.paystatus,b.signature from ha_order a,ha_user b where a.userid = b.userid and a.tableid = ? and and date = ? and gametime = ?";
+	private static String sqlSelectSystemNotify = "select id,title,content,sendtime from ha_systemnotify order by sendtime LIMIT ?,?";
+	private static String sqlSelectUnSendNotify = "select id,title,content,sendtime from ha_systemnotify where sendflag = 0 and sendtime < ? ";
+	
 	
 	public static void initialize() throws Exception{
 		Properties p = new Properties();
@@ -172,6 +176,15 @@ public class Happy8DAO {
 		}
 	}
 	
+	public static void deleteSystemNotify(String sql) throws Exception{
+		try{
+			happy8DB.executeNonQuery(sql);
+		}catch(Exception ex){
+			log.error("deleteSystemNotify error", ex);
+			throw ex;
+		}
+	}
+	
 	public static void updateTableInfo(String sql,Object []values) throws Exception{
 		try{
 			happy8DB.executeNonQuery(sql, values);
@@ -189,6 +202,18 @@ public class Happy8DAO {
 			return dt.getRow(0).getLong(1);
 		}catch(Exception ex){
 			log.error("insertFindBuddyInfo error", ex);
+			throw ex;
+		}
+	}
+	
+	public static int insertSystemNotify(String title,String content,Date sendTime) throws Exception{
+		try{
+			String []params = {"@title","@content","@sendtime"};
+			Object []values = {title,content,sendTime};
+			DataTable dt = happy8DB.spExecuteTable("USP_InsertSystemNotify", params, values);
+			return dt.getRow(0).getInt(1);
+		}catch(Exception ex){
+			log.error("insertSystemNotify error", ex);
 			throw ex;
 		}
 	}
@@ -1091,6 +1116,58 @@ public class Happy8DAO {
 			return dt.getRow(0).getLong(1);
 		}catch(Exception ex){
 			log.error("insertOrder error", ex);
+			throw ex;
+		}
+	}
+	
+	public static List<SystemNotifyItem> getSystemNotify(int start,int end) throws Exception{
+		try{
+			List<SystemNotifyItem> res = new ArrayList<SystemNotifyItem>();
+			int count = end - start ;
+			Object []values = {start,count};
+			DataTable dt = happy8DB.executeTable(sqlSelectSystemNotify, values);
+			for(DataRow dr : dt.getRows()){
+				SystemNotifyItem item = new SystemNotifyItem();
+				item.setTitle(dr.getString("title"));
+				item.setSnId(dr.getInt("id"));
+				item.setContent(dr.getString("content"));
+				item.setSendTime(StringUtils.Date2String(dr.getDateTime("sendtime")));
+				res.add(item);
+			}
+			return res;
+		}catch(Exception ex){
+			log.error("getSystemNotify error", ex);
+			throw ex;
+		}
+	}
+	
+	public static List<SystemNotifyItem> getUnSendSystemNotify() throws Exception{
+		try{
+			Object []values = {new Date()};
+			List<SystemNotifyItem> res = new ArrayList<SystemNotifyItem>();
+			DataTable dt = happy8DB.executeTable(sqlSelectUnSendNotify, values);
+			for(DataRow dr : dt.getRows()){
+				SystemNotifyItem item = new SystemNotifyItem();
+				item.setTitle(dr.getString("title"));
+				item.setSnId(dr.getInt("id"));
+				item.setContent(dr.getString("content"));
+				item.setSendTime(StringUtils.Date2String(dr.getDateTime("sendtime")));
+				res.add(item);
+			}
+			return res;
+		}catch(Exception ex){
+			log.error("getUnSendSystemNotify error", ex);
+			throw ex;
+		}
+	}
+	
+	private static String sqlUpdateSendFlag = "update ha_systemnotify set sendflag = 1 where id = ?";
+	public static void updateSendFlag(int snId) throws Exception{
+		try{
+			Object []values = { snId };
+			happy8DB.executeNonQuery(sqlUpdateSendFlag, values);
+		}catch(Exception ex){
+			log.error("updateSendFlag error", ex);
 			throw ex;
 		}
 	}
