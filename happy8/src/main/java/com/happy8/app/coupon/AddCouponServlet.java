@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.happy8.args.AddCouponReqArgs;
 import com.happy8.args.AddCouponRspArgs;
 import com.happy8.dao.Happy8DAO;
@@ -58,7 +59,7 @@ public class AddCouponServlet extends HttpServlet{
 			Happy8DAO.insertCoupon(guid.toString(), args.getType(), args.getDisCount(), args.getValue(), args.getStartAmout(),args.getExpireTime());
 			AddCouponRspArgs resArgs = new AddCouponRspArgs();
 			resArgs.setCouponId(guid.toString());
-			HttpTools.sendOkResponse(response, JSON.toJSONString(resArgs));
+			HttpTools.sendOkResponse(response, JSON.toJSONString(resArgs,SerializerFeature.WriteMapNullValue,SerializerFeature.WriteNullStringAsEmpty));
 		}catch(Exception ex){
 			log.error("AddCouponServlet process error",ex);
 			HttpTools.sendResponseOnlyStatusCode(response, 500);

@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.happy8.args.AddClubReqArgs;
 import com.happy8.args.AddClubRspArgs;
 import com.happy8.args.ClubItem;
@@ -81,7 +82,7 @@ public class ProcessClubServlet extends HttpServlet{
 		
 		AddClubRspArgs res = new AddClubRspArgs();
 		res.setClubId(id);
-		HttpTools.sendOkResponse(response, JSON.toJSONString(res));
+		HttpTools.sendOkResponse(response, JSON.toJSONString(res,SerializerFeature.WriteMapNullValue,SerializerFeature.WriteNullStringAsEmpty));
 	}
 	
 	private void processUpdate(HttpServletRequest request,

@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.happy8.args.OrderItem;
 import com.happy8.args.QueryTableItem;
 import com.happy8.dao.Happy8DAO;
@@ -45,7 +46,7 @@ public class QueryTablesServlet extends HttpServlet{
 			long time = now.getTime() - 15 * 60 * 1000;
 			Date use = new Date(time);
 			List<QueryTableItem> res = Happy8DAO.getQueryTableList(date,gameTime,clubId,start,end);
-			HttpTools.sendOkResponse(response, JSON.toJSONString(res));
+			HttpTools.sendOkResponse(response, JSON.toJSONString(res,SerializerFeature.WriteMapNullValue,SerializerFeature.WriteNullStringAsEmpty));
 		}catch(Exception ex){
 			log.error("QueryTablesServlet process error",ex);
 			HttpTools.sendResponseOnlyStatusCode(response, 500);

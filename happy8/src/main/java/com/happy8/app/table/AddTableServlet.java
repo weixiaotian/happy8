@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.happy8.args.AddTableReqArgs;
 import com.happy8.args.AddTableRspArgs;
 import com.happy8.args.FindBuddyInfoReqArgs;
@@ -44,7 +45,7 @@ public class AddTableServlet extends HttpServlet{
 			long id = Happy8DAO.insertTable(args.getClubId(), args.getType(), args.getTabName(), args.getPrice());
 			AddTableRspArgs res = new AddTableRspArgs();
 			res.setTableId((int)id);
-			HttpTools.sendOkResponse(response, JSON.toJSONString(res));
+			HttpTools.sendOkResponse(response, JSON.toJSONString(res,SerializerFeature.WriteMapNullValue,SerializerFeature.WriteNullStringAsEmpty));
 			
 		}catch(Exception ex){
 			log.error("AddTableServlet process error",ex);

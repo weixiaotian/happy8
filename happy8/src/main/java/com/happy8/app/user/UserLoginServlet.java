@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.happy8.args.StatusCode;
 import com.happy8.args.UserInfoArgs;
 import com.happy8.args.UserPasswordArgs;
@@ -46,7 +47,7 @@ public class UserLoginServlet extends HttpServlet {
 			}
 			StatusCode code = new StatusCode();
 			code.setStatusCode(statusCode);
-			HttpTools.sendOkResponse(response, JSON.toJSONString(code));
+			HttpTools.sendOkResponse(response, JSON.toJSONString(code,SerializerFeature.WriteMapNullValue,SerializerFeature.WriteNullStringAsEmpty));
 		}catch(Exception ex){
 			log.error("UserLoginServlet process error",ex);
 			HttpTools.sendResponseOnlyStatusCode(response, 500);

@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.happy8.args.FindBuddyInfoItem;
 import com.happy8.dao.Happy8DAO;
 import com.happy8.utils.HttpTools;
@@ -32,7 +33,7 @@ public class GetFindBuddyInfoServlet extends HttpServlet{
 				return;
 			}
 			FindBuddyInfoItem res = Happy8DAO.getFindBuddyInfo(fdinfoid);
-			HttpTools.sendOkResponse(response, JSON.toJSONString(res));
+			HttpTools.sendOkResponse(response, JSON.toJSONString(res,SerializerFeature.WriteMapNullValue,SerializerFeature.WriteNullStringAsEmpty));
 		}catch(Exception ex){
 			log.error("GetFindBuddyInfoServlet process error",ex);
 			HttpTools.sendResponseOnlyStatusCode(response, 500);

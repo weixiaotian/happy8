@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.happy8.args.FindBuddyInfoItem;
 import com.happy8.args.TimeLineInfoItem;
 import com.happy8.dao.Happy8DAO;
@@ -49,7 +50,7 @@ public class TimeLineInfoListServlet extends HttpServlet{
 				res = Happy8DAO.getTimeLineList(userId, start, end);
 			}
 			
-			HttpTools.sendOkResponse(response, JSON.toJSONString(res));
+			HttpTools.sendOkResponse(response, JSON.toJSONString(res,SerializerFeature.WriteMapNullValue,SerializerFeature.WriteNullStringAsEmpty));
 		}catch(Exception ex){
 			log.error("TimeLineInfoListServlet process error",ex);
 			HttpTools.sendResponseOnlyStatusCode(response, 500);

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.happy8.args.ReplayTimeLineReqArgs;
 import com.happy8.args.ReplayTimeLineRspArgs;
 import com.happy8.dao.Happy8DAO;
@@ -48,7 +49,7 @@ public class ReplayTimeLineServlet extends HttpServlet{
 			long id = Happy8DAO.insertTimeLineComment(args.getTlInfoId(),args.getPublishUserId(), args.getCommentedUserId(), args.getTxtContent());
 			ReplayTimeLineRspArgs res = new ReplayTimeLineRspArgs();
 			res.setCommentId(id);;
-			HttpTools.sendOkResponse(response, JSON.toJSONString(res));
+			HttpTools.sendOkResponse(response, JSON.toJSONString(res,SerializerFeature.WriteMapNullValue,SerializerFeature.WriteNullStringAsEmpty));
 			
 		}catch(Exception ex){
 			log.error("ReplayTimeLineServlet process error",ex);

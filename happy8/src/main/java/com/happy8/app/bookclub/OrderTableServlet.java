@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.happy8.app.findbuddy.CheckOrderItem;
 import com.happy8.args.OrderTableReqArgs;
 import com.happy8.args.OrderTableRspArgs;
@@ -74,7 +75,7 @@ public class OrderTableServlet extends HttpServlet{
 			OrderTableRspArgs resArgs = new OrderTableRspArgs();
 			resArgs.setCurrentTime(StringUtils.Date2String(now));
 			resArgs.setOrderId(res);
-			HttpTools.sendOkResponse(response, JSON.toJSONString(resArgs));
+			HttpTools.sendOkResponse(response, JSON.toJSONString(resArgs,SerializerFeature.WriteMapNullValue,SerializerFeature.WriteNullStringAsEmpty));
 		}catch(Exception ex){
 			log.error("OrderTableServlet process error",ex);
 			HttpTools.sendResponseOnlyStatusCode(response, 500);
