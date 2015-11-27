@@ -68,13 +68,13 @@ public class Happy8DAO {
 	private static String sqlDeleteOrderById = "delete from ha_order where orderid = ?";
 	//private static String sqlSelectBookClubList = "select bookid,userid,clubid,tableindex,chairindex,starttime,duration from ha_bookclub where userid = ? order by bookid desc limit ?,?";
 	private static String sqlSelectOrderList = "select a.orderid,a.userid,b.tableid,b.tablename,c.clubid,c.name,a.date,a.gametime,a.paystatus from ha_order a,ha_table b,ha_club c where a.tableid = b.tableid and b.clubid = c.clubid and a.userid = ? and (a.paystatus = 1 or a.createdate > ?) order by a.orderid desc limit ?,?";
-	private static String sqlSelectTablesByClubId = "select a.tableid,a.tablename,a.price,a.type,a.url from ha_table a where a.clubid = ? by a.clubid desc limit ?,?";
+	private static String sqlSelectTablesByClubId = "select a.tableid,a.tablename,a.price,a.type,a.url from ha_table a where a.clubid = ? order by a.clubid desc limit ?,?";
 	
 	private static String sqlIsUserSuperAdimin = "select userid from ha_user where userid = ? and usertype = 4";
 	private static String sqlInsertCoupon = "insert into ha_coupon(couponid,type,discount,value,startamout,expiretime) values (?,?,?,?,?,?)";
 	private static String sqlInsertUserCoupon = "insert into ha_usercoupon(userid,consumecouponid,createdate) values(?,?,?) ON DUPLICATE KEY UPDATE createdate = ?";
 	private static String sqlDeleteCoupon= "delete from ha_coupon where couponid = ?";
-	private static String sqlSelectMyCouponList = "SELECT a.couponid,a.type,a.discount,a.value,a.startamout,b.consumecouponid FROM ha_coupon a LEFT JOIN ha_usercoupon b ON a.`couponid` = b.`consumecouponid` WHERE  b.userid = '?' ORDER BY a.id DESC LIMIT ?,?";
+	private static String sqlSelectMyCouponList = "SELECT a.couponid,a.type,a.discount,a.value,a.startamout,b.consumecouponid FROM ha_coupon a LEFT JOIN ha_usercoupon b ON a.`couponid` = b.`consumecouponid` WHERE  b.userid = ? ORDER BY a.id DESC LIMIT ?,?";
 	private static String sqlSelectUnConsumeCouponList = "select couponid,type,discount,value,startamout from ha_coupon where expiretime > ? ORDER BY id DESC LIMIT ?,?";
 	private static String sqlSelectConsumeCouponList = "select a.couponid,a.type,a.discount,a.value,a.startamout from ha_coupon a,ha_usercoupon b where a.`couponid` = b.`consumecouponid`  ORDER BY a.id DESC LIMIT ?,? ";
 	private static String sqlUpdateClubStatus = "UPDATE ha_club SET status = ? WHERE clubid = ?";
@@ -89,7 +89,7 @@ public class Happy8DAO {
 	private static String sqlDeleteTable = "delete from ha_table where tableid = ?";
 	private static String sqlSelectOrderByDate = "select paystatus,createdate from ha_order where tableid = ? and date = ? and gametime = ?";
 	private static String sqlDeleteNoPayOrder = "delete from ha_order where tableid = ? and date = ? and gametime = ?";
-	private static String sqlSelectOrderStatus = "select a.userid,a.createdate,a.paystatus,b.signature from ha_order a,ha_user b where a.userid = b.userid and a.tableid = ? and and date = ? and gametime = ?";
+	private static String sqlSelectOrderStatus = "select a.userid,a.createdate,a.paystatus,b.signature from ha_order a,ha_user b where a.userid = b.userid and a.tableid = ? and date = ? and gametime = ?";
 	private static String sqlSelectSystemNotify = "select id,title,content,sendtime from ha_systemnotify order by sendtime LIMIT ?,?";
 	private static String sqlSelectUnSendNotify = "select id,title,content,sendtime from ha_systemnotify where sendflag = 0 and sendtime < ? ";
 	

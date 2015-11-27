@@ -6,6 +6,14 @@ public class UpdateTableInfoArgs {
 	private String tabName;
 	private int type;
 	private float price;
+	private String PicUrl;
+	
+	public String getPicUrl() {
+		return PicUrl;
+	}
+	public void setPicUrl(String picUrl) {
+		PicUrl = picUrl;
+	}
 	public int getTableId() {
 		return tableId;
 	}

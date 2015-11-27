@@ -66,6 +66,12 @@ public class UpdateTableInfoServlet extends HttpServlet{
 				sb.append(", price = ? ");
 				values.add(args.getPrice());
 			}
+			
+			if(!StringUtils.isNullOrEmpty(args.getPicUrl())){
+				sb.append(", url = ? ");
+				values.add(args.getPicUrl());
+			}
+			
 			if(StringUtils.isNullOrEmpty(sb.toString())){
 				log.error("req no filed: "+body);
 				HttpTools.sendResponseOnlyStatusCode(response, 400);

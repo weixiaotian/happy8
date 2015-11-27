@@ -42,7 +42,7 @@ public class MyOwnClubListServlet extends HttpServlet{
 				return;
 			}
 			
-			List<ClubItem> res = Happy8DAO.getFavoriteClubList(userId, start, end);
+			List<ClubItem> res = Happy8DAO.getMyOwnClubList(userId, start, end);
 			
 			HttpTools.sendOkResponse(response, JSON.toJSONString(res,SerializerFeature.WriteMapNullValue,SerializerFeature.WriteNullStringAsEmpty));
 		}catch(Exception ex){

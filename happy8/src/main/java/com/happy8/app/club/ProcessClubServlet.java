@@ -2,6 +2,7 @@ package com.happy8.app.club;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServlet;
@@ -158,7 +159,7 @@ public class ProcessClubServlet extends HttpServlet{
 		}
 		
 		if(needGeoHash){
-			sb.append(", phone = ? ");
+			sb.append(", geohash = ? ");
 			values.add(GeoHashTool.generateGeoHashCode(args.getLongitude(), args.getLatitude()));
 		}
 		
@@ -169,6 +170,7 @@ public class ProcessClubServlet extends HttpServlet{
 		}
 		String strField = sb.toString().indexOf(",") == 0 ? sb.toString().substring(1) : sb.toString();
 		values.add(args.getClubId());
+		log.info(String.format("sql:%s,args:%s", String.format(sqlFormat, strField),Arrays.toString(values.toArray())));
 		int statusCode = Happy8DAO.updateClub(String.format(sqlFormat, strField), values.toArray());
 		HttpTools.sendResponseOnlyStatusCode(response, statusCode);
 	}
