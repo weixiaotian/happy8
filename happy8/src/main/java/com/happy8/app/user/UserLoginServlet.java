@@ -43,7 +43,7 @@ public class UserLoginServlet extends HttpServlet {
 			}
 			int statusCode = Happy8DAO.userLogin(args.getUserId(), args.getPassword());
 			if(statusCode == 200){
-				Happy8DAO.updateUserStatus(args.getUserId(), 1);
+				Happy8DAO.updateUserStatus(args.getUserId(), 1,args.getPushtoken());
 			}
 			StatusCode code = new StatusCode();
 			code.setStatusCode(statusCode);

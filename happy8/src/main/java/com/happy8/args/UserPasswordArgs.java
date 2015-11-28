@@ -7,6 +7,7 @@ package com.happy8.args;
 public class UserPasswordArgs {
 	private String userId;
 	private String password;
+	private String pushtoken;
 	public String getUserId() {
 		return userId;
 	}
@@ -18,6 +19,12 @@ public class UserPasswordArgs {
 	}
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	public String getPushtoken() {
+		return pushtoken;
+	}
+	public void setPushtoken(String pushtoken) {
+		this.pushtoken = pushtoken;
 	}
 	
 }
