@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.happy8.args.FindBuddyInfoItem;
 import com.happy8.dao.Happy8DAO;
 import com.happy8.utils.HttpTools;
 
@@ -21,6 +22,12 @@ public class DeleteFindBuddyInfoServlet extends HttpServlet{
 		try{
 			String userId = request.getParameter("userid");
 			long fdinfoid = Long.parseLong(request.getParameter("fdinfoid"));
+			FindBuddyInfoItem item = Happy8DAO.getFindBuddyInfo(fdinfoid);
+			if(item.getUserId().equals(userId)){
+				Happy8DAO.deleteFindBuddyInfo(fdinfoid);;
+				HttpTools.sendResponseOnlyStatusCode(response, 200);
+				return;
+			}
 			
 			if(!Happy8DAO.isUserSuperAdmin(userId)){
 				HttpTools.sendResponseOnlyStatusCode(response, 405);

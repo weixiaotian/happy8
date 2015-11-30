@@ -26,7 +26,7 @@ public class LogoutServlet extends HttpServlet{
 				HttpTools.sendResponseOnlyStatusCode(response, 400);
 				return;
 			}
-			Happy8DAO.updateUserStatus(userId, 0);
+			Happy8DAO.updateUserStatus(userId, 0,"");
 			HttpTools.sendResponseOnlyStatusCode(response, 200);
 		}catch(Exception ex){
 			log.error("LogoutServlet process error",ex);

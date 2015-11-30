@@ -2,6 +2,7 @@ package com.happy8.dao;
 
 import java.io.FileInputStream;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -82,18 +83,19 @@ public class Happy8DAO {
 	private static String sqlDeleteFindBuddyInfo = "delete from ha_findbuddyinfo where bdinfoid = ?";
 	private static String sqlDeleteFindBuddyReplayAllOne = "delete from ha_findbuddycomment where bdinfoid = ?";
 	private static String sqlDeleteFindBuddyReplay = "delete from ha_findbuddycomment where commentid = ?";
+	private static String sqlSelectFrindBuddyReplay = "select a.commentid,a.bdinfoid,a.publishid,a.commentedid,a.commenttext,a.createdate from ha_findbuddycomment a where a.commentid = ?";
 	private static String sqlInsertUserRate = "insert into ha_userclubrate(clubid,userid,rate) values(?,?,?)  ON DUPLICATE KEY UPDATE  rate = ?";
 	private static String sqlSelectSumRateAndCount = "select sum(rate) sum,count(*) count from ha_userclubrate where clubid = ?";
 	private static String sqlUpdateClubRate = "update ha_club set rate = ? where clubid = ?";
 	private static String sqlSelectUserLevel = "select usertype,userstatus from ha_user where userid = ?";
-	private static String sqlUpdateUserStatus = "update ha_user set userstatus = ? where userid = ?";
+	private static String sqlUpdateUserStatus = "update ha_user set userstatus = ?,pushtoken = ? where userid = ?";
 	private static String sqlDeleteTable = "delete from ha_table where tableid = ?";
 	private static String sqlSelectOrderByDate = "select paystatus,createdate from ha_order where tableid = ? and date = ? and gametime = ?";
 	private static String sqlDeleteNoPayOrder = "delete from ha_order where tableid = ? and date = ? and gametime = ?";
 	private static String sqlSelectOrderStatus = "select a.userid,a.createdate,a.paystatus,b.signature from ha_order a,ha_user b where a.userid = b.userid and a.tableid = ? and date = ? and gametime = ?";
 	private static String sqlSelectSystemNotify = "select id,title,content,sendtime from ha_systemnotify order by sendtime LIMIT ?,?";
 	private static String sqlSelectUnSendNotify = "select id,title,content,sendtime from ha_systemnotify where sendflag = 0 and sendtime < ? ";
-	
+	private static String sqlSelectPushToken = "select pushtoken from ha_user where userid = ?";
 	
 	public static void initialize() throws Exception{
 		Properties p = new Properties();
@@ -120,6 +122,16 @@ public class Happy8DAO {
 			throw ex;
 		}
 		
+	}
+	
+	public static String getUserPushToken(String userId) throws SQLException{
+		Object []values = { userId };
+		DataTable dt = happy8DB.executeTable(sqlSelectUserInfo, values);
+		if(dt.getRowCount() == 0){
+			return "";
+		}
+		
+		return dt.getRow(0).getString("pushtoken");
 	}
 	
 	public static int userLogin(String userId,String password) throws Exception{
@@ -800,6 +812,36 @@ public class Happy8DAO {
 		}
 	}
 	
+	public static FindBuddyCommentInfo getFindBuddyReplay(long commitId)
+			throws Exception {
+		try {
+			Object[] values = { commitId };
+			DataTable dt = happy8DB.executeTable(sqlSelectFrindBuddyReplay,
+					values);
+			if (dt.getRowCount() == 0)
+				return null;
+			FindBuddyCommentInfo item = new FindBuddyCommentInfo();
+			DataRow dr = dt.getRow(0);
+			long bdInfoId = dr.getLong("bdinfoid");
+			long commentId = dr.getLong("commentid");
+			String publishId = dr.getString("publishid");
+			String commentText = dr.getString("commenttext");
+
+			item.setBdInfoId(bdInfoId);
+			item.setCommentId(commentId);
+			item.setCommentText(commentText);
+			item.setPublishUserId(publishId);
+			item.setAvatarUrl(dr.getString("avatarurl"));
+			item.setSignature(dr.getString("signature"));
+			item.setDateTime(dateFormat(dr.getDateTime("createdate")));
+
+			return item;
+		} catch (Exception ex) {
+			log.error("getFindBuddyReplay error", ex);
+			throw ex;
+		}
+	}
+	
 	public static long insertBookClub(String userId,long clubId,int tableIndex,int chairIndex,Date startTime,int duration) throws Exception{
 		try{
 			String []params = {"@userid","@clubid","@tableindex","@chairIndex","@startTime","@duration"};
@@ -1200,9 +1242,9 @@ public class Happy8DAO {
 		}
 	}
 	
-	public static void updateUserStatus(String userId,int userStatus) throws Exception{
+	public static void updateUserStatus(String userId,int userStatus,String pushtoken) throws Exception{
 		try{
-			Object []values = { userStatus,userId };
+			Object []values = { userStatus,pushtoken,userId };
 			happy8DB.executeNonQuery(sqlUpdateUserStatus, values);
 		}catch(Exception ex){
 			log.error("updateUserStatus error", ex);
