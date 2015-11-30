@@ -60,6 +60,7 @@ public class Happy8DAO {
 	private static String sqlQueryClubListByTel = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,status,clubimageurl from ha_club where phone like ? and status = 1 order by clubid desc limit ?,?";
 	private static String sqlSelectMyOwnClubList = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,status,clubimageurl,status from ha_club where ownerid = ? order by clubid desc limit ?,?";
 	private static String sqlQueryClubListByAddr = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,status,clubimageurl from ha_club where addr like ? and status = 1 order by clubid desc limit ?,?";
+	private static String sqlSelectClubItem = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,status,clubimageurl from ha_club where clubid = ?";
 	private static String sqlQueryClubListByGeoHash = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,status,clubimageurl from ha_club where (geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ? or geohash like ?) and status = 1  order by clubid desc limit ?,?";
 	private static String sqlInsertAddFriendReq = "insert into ha_addfriendreq(userid,friendid) values(?,?)";
 	private static String sqlDeleteAddFriendReq = "delete from ha_addfriendreq where userid = ? and friendid = ?";
@@ -694,6 +695,33 @@ public class Happy8DAO {
 			return res;
 		}catch(Exception ex){
 			log.error("getTimeLineList error", ex);
+			throw ex;
+		}
+	}
+
+	public static ClubItem getClubItem(int clubId) throws Exception {
+		Object[] values = { clubId };
+		try {
+			DataTable dt = happy8DB.executeTable(sqlSelectClubItem, values);
+			if (dt.getRowCount() == 0)
+				return null;
+			DataRow dr = dt.getRow(0);
+			ClubItem item = new ClubItem();
+			item.setAddr(dr.getString("addr"));
+			item.setName(dr.getString("name"));
+			item.setClubId(dr.getInt("clubid"));
+			item.setLatitude(dr.getDouble("latitude"));
+			item.setStatus(dr.getInt("status"));
+			item.setLongitude(dr.getDouble("longitude"));
+			item.setOwnerId(dr.getString("ownerid"));
+			item.setPhone(dr.getString("phone"));
+			item.setPlayStyle(dr.getString("playstyle"));
+			item.setSale(dr.getDouble("sale"));
+			item.setClubImageUrl(dr.getString("clubimageurl"));
+			return item;
+
+		} catch (Exception ex) {
+			log.error("getClubItem error", ex);
 			throw ex;
 		}
 	}
