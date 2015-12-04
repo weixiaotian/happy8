@@ -12,7 +12,9 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.happy8.app.findbuddy.CheckOrderItem;
+import com.happy8.args.OrderDetailItem;
 import com.happy8.args.OrderTableReqArgs;
+import com.happy8.args.OrderTableReqArgs2;
 import com.happy8.args.OrderTableRspArgs;
 import com.happy8.dao.Happy8DAO;
 import com.happy8.utils.HttpTools;
@@ -30,12 +32,25 @@ public class OrderTableServlet extends HttpServlet{
 		try{
 			String body = HttpTools.getRequestBody(request);
 			OrderTableReqArgs args = null;
-			try{
-				args = JSON.parseObject(body, OrderTableReqArgs.class);
-			}catch(Exception ex){
-				log.error("parse error req: "+body, ex);
-				HttpTools.sendResponseOnlyStatusCode(response, 400);
-				return;
+			if(StringUtils.isJsonFieldString(body, "detail")){
+				try{
+					OrderTableReqArgs2 args2 = JSON.parseObject(body, OrderTableReqArgs2.class);
+					args = new OrderTableReqArgs();
+					args.setAmount(args2.getAmount());
+					args.setDetail(JSON.parseArray(args2.getDetail(), OrderDetailItem.class));
+				}catch(Exception ex){
+					log.error("parse error req: "+body, ex);
+					HttpTools.sendResponseOnlyStatusCode(response, 400);
+					return;
+				}
+			}else{
+				try{
+					args = JSON.parseObject(body, OrderTableReqArgs.class);
+				}catch(Exception ex){
+					log.error("parse error req: "+body, ex);
+					HttpTools.sendResponseOnlyStatusCode(response, 400);
+					return;
+				}
 			}
 			
 			if(StringUtils.isNullOrEmpty(body) || args == null){
@@ -43,35 +58,44 @@ public class OrderTableServlet extends HttpServlet{
 				return;
 			}
 			
-			if(StringUtils.isNullOrEmpty(args.getUserId())){
-				log.error("req userid is null");
+			if(args.getDetail() == null || args.getDetail().size() == 0){
 				HttpTools.sendResponseOnlyStatusCode(response, 400);
 				return;
 			}
-			
-			CheckOrderItem check = Happy8DAO.getCheckOrder(args.getTableId(), StringUtils.parse2Date(args.getDate()), args.getGameTime());
-			
-			if(check!=null && check.getStatus() == 1){
-				log.error("table is ordered and also is pay");
-				HttpTools.sendResponseOnlyStatusCode(response, 406);
-				return;
-			}
-			
 			Date now = new Date();
-			if(check!=null){
-				if(now.getTime() - check.getCreateDate().getTime() < 15 * 60 * 1000){
-					log.error(String.format("table is order no pay createdate%%s now:%", check.getCreateDate(),now));
+			for(OrderDetailItem item : args.getDetail()){
+				if(StringUtils.isNullOrEmpty(item.getUserId())){
+					log.error("req userid is null");
+					HttpTools.sendResponseOnlyStatusCode(response, 400);
+					return;
+				}
+				
+				CheckOrderItem check = Happy8DAO.getCheckOrder(item.getTableId(), StringUtils.parse2Date(item.getDate()), item.getGameTime());
+				
+				if(check!=null && check.getStatus() == 1){
+					log.error("table is ordered and also is pay");
 					HttpTools.sendResponseOnlyStatusCode(response, 406);
 					return;
 				}
+				
+				
+				if(check!=null){
+					if(now.getTime() - check.getCreateDate().getTime() < 15 * 60 * 1000){
+						log.error(String.format("table is order no pay createdate%%s now:%", check.getCreateDate(),now));
+						HttpTools.sendResponseOnlyStatusCode(response, 406);
+						return;
+					}
+				}
+				
+				if(check!=null){
+					Happy8DAO.deleteNoPayOrder(check.getOrderId());
+				}
 			}
 			
-			if(check!=null){
-				Happy8DAO.deleteNoPayOrder(args.getTableId(), StringUtils.parse2Date(args.getDate()), args.getGameTime());
+			long res = Happy8DAO.insertOrder(args.getAmount());
+			for(OrderDetailItem item : args.getDetail()){
+				Happy8DAO.insertOrderDetail(res, item.getTableId(), StringUtils.parse2Date(item.getDate()),item.getGameTime(), item.getUserId());
 			}
-			
-			long res = Happy8DAO.insertOrder(args.getTableId(), StringUtils.parse2Date(args.getDate()), args.getGameTime(), args.getUserId());
-			
 			OrderTableRspArgs resArgs = new OrderTableRspArgs();
 			resArgs.setCurrentTime(StringUtils.Date2String(now));
 			resArgs.setOrderId(res);

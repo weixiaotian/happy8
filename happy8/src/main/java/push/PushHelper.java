@@ -1,7 +1,9 @@
 package push;
 
 import push.android.AndroidBroadcast;
+import push.android.AndroidUnicast;
 import push.ios.IOSBroadcast;
+import push.ios.IOSUnicast;
 
 public class PushHelper {
 	private static String androidAppkey = "564fcc6f67e58e2bd0007462";
@@ -26,6 +28,23 @@ public class PushHelper {
 		return client.send(broadcast);
 	}
 	
+	public static void sendAndroidUnicast(String pushToken,String ticker,String title,String content) throws Exception {
+		AndroidUnicast unicast = new AndroidUnicast(androidAppkey,androidAppMasterSecret);
+		// TODO Set your device token
+		unicast.setDeviceToken( pushToken);
+		unicast.setTicker( ticker);
+		unicast.setTitle(  title);
+		unicast.setText(   content);
+		unicast.goAppAfterOpen();
+		unicast.setDisplayType(AndroidNotification.DisplayType.NOTIFICATION);
+		// TODO Set 'production_mode' to 'false' if it's a test device. 
+		// For how to register a test device, please see the developer doc.
+		unicast.setProductionMode();
+		// Set customized fields
+		//unicast.setExtraField("test", "helloworld");
+		client.send(unicast);
+	}
+	
 	
 	public static boolean sendIOSBroadcast(String title) throws Exception {
 		IOSBroadcast broadcast = new IOSBroadcast(iosAppkey,iosAppMasterSecret);
@@ -38,5 +57,19 @@ public class PushHelper {
 		// Set customized fields
 		//broadcast.setCustomizedField("test", "helloworld");
 		return client.send(broadcast);
+	}
+	
+	public static void sendIOSUnicast(String pushToken,String title) throws Exception {
+		IOSUnicast unicast = new IOSUnicast(iosAppkey,iosAppMasterSecret);
+		// TODO Set your device token
+		unicast.setDeviceToken( pushToken );
+		unicast.setAlert(title);
+		unicast.setBadge( 0);
+		unicast.setSound( "default");
+		// TODO set 'production_mode' to 'true' if your app is under production mode
+		unicast.setTestMode();
+		// Set customized fields
+		//unicast.setCustomizedField("test", "helloworld");
+		client.send(unicast);
 	}
 }

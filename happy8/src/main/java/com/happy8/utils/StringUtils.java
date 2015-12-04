@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.mysql.jdbc.Field;
+
 public class StringUtils {
 	public static boolean isNullOrEmpty(String str){
 		if(str == null || str.equals("")){
@@ -23,4 +25,19 @@ public class StringUtils {
 		SimpleDateFormat sdf=new SimpleDateFormat(pattern);
 		return sdf.format(date);
 	}
+	
+	public static boolean isJsonFieldString(String json,String filed){
+		int index = json.lastIndexOf(filed);
+		if(index < 0){
+			return false;
+		}
+		if(json.charAt(index+filed.length()+2) == '"'){
+			return true;
+		}
+		return false;
+	}
+	
+//	public static void main(String[] args) {
+//		System.out.println(isJsonFieldString("{\"detail\":\"", "detail"));
+//	}
 }

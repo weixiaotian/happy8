@@ -69,7 +69,7 @@ public class Happy8DAO {
 	private static String sqlDeleteFriend = "delete from ha_friend where userid = ? and friendid = ?";
 	private static String sqlDeleteOrderById = "delete from ha_order where orderid = ?";
 	//private static String sqlSelectBookClubList = "select bookid,userid,clubid,tableindex,chairindex,starttime,duration from ha_bookclub where userid = ? order by bookid desc limit ?,?";
-	private static String sqlSelectOrderList = "select a.orderid,a.userid,b.tableid,b.tablename,c.clubid,c.name,a.date,a.gametime,a.paystatus from ha_order a,ha_table b,ha_club c where a.tableid = b.tableid and b.clubid = c.clubid and a.userid = ? and (a.paystatus = 1 or a.createdate > ?) order by a.orderid desc limit ?,?";
+	private static String sqlSelectOrderList = "select a.orderid,a.userid,b.tableid,b.tablename,c.clubid,c.name,a.date,a.gametime,d.paystatus from ha_orderdetail a,ha_order d,ha_table b,ha_club c where a.orderid = d.orderid and a.tableid = b.tableid and b.clubid = c.clubid and a.userid = ? and (a.paystatus = 1 or a.createdate > ?) order by a.orderid desc limit ?,?";
 	private static String sqlSelectTablesByClubId = "select a.tableid,a.tablename,a.price,a.type,a.url from ha_table a where a.clubid = ? order by a.clubid desc limit ?,?";
 	
 	private static String sqlIsUserSuperAdimin = "select userid from ha_user where userid = ? and usertype = 4";
@@ -90,13 +90,15 @@ public class Happy8DAO {
 	private static String sqlSelectUserLevel = "select usertype,userstatus from ha_user where userid = ?";
 	private static String sqlUpdateUserStatus = "update ha_user set userstatus = ?,pushtoken = ? where userid = ?";
 	private static String sqlDeleteTable = "delete from ha_table where tableid = ?";
-	private static String sqlSelectOrderByDate = "select paystatus,createdate from ha_order where tableid = ? and date = ? and gametime = ?";
-	private static String sqlDeleteNoPayOrder = "delete from ha_order where tableid = ? and date = ? and gametime = ?";
-	private static String sqlSelectOrderStatus = "select a.userid,a.createdate,a.paystatus,b.signature from ha_order a,ha_user b where a.userid = b.userid and a.tableid = ? and date = ? and gametime = ?";
+	private static String sqlSelectOrderByDate = "select a.orderid, a.paystatus,a.createdate from ha_order a,ha_orderdetail b where a.orderid = b.orderid and  b.tableid = ? and b.date = ? and b.gametime = ?";
+	private static String sqlDeleteNoPayOrder = "delete from ha_order where orderid = ?";
+	private static String sqlInsertOrderDetail = "insert into ha_orderdetail(orderid,userid,tableid,date,gametime) values(?,?,?,?,?)";
+	private static String sqlDeleteOrderDetail = "delete from ha_orderdetail where orderid = ?";
+	private static String sqlSelectOrderStatus = "select a.userid,a.createdate,c.paystatus,b.signature from ha_orderdetail a, ha_order c,ha_user b where a.orderid = c.orderid and a.userid = b.userid and a.tableid = ? and date = ? and gametime = ?";
 	private static String sqlSelectSystemNotify = "select id,title,content,sendtime from ha_systemnotify order by sendtime LIMIT ?,?";
 	private static String sqlSelectUnSendNotify = "select id,title,content,sendtime from ha_systemnotify where sendflag = 0 and sendtime < ? ";
 	private static String sqlSelectPushToken = "select pushtoken from ha_user where userid = ?";
-	
+	 
 	public static void initialize() throws Exception{
 		Properties p = new Properties();
 		p.load(new FileInputStream("happy8db.properties"));
@@ -126,7 +128,7 @@ public class Happy8DAO {
 	
 	public static String getUserPushToken(String userId) throws SQLException{
 		Object []values = { userId };
-		DataTable dt = happy8DB.executeTable(sqlSelectUserInfo, values);
+		DataTable dt = happy8DB.executeTable(sqlSelectPushToken, values);
 		if(dt.getRowCount() == 0){
 			return "";
 		}
@@ -854,10 +856,10 @@ public class Happy8DAO {
 		}
 	}
 	
-	public static long insertOrder(String userId,int tableId,Date date,int gameTime) throws Exception{
+	public static long insertOrder(double amount) throws Exception{
 		try{
-			String []params = {"@userid","@tableid","@date","@gametime"};
-			Object []values = {userId,tableId,date,gameTime};
+			String []params = {"@paystatus","@amount"};
+			Object []values = { 0 , amount};
 			DataTable dt = happy8DB.spExecuteTable("USP_InsertOrder", params, values);
 			return dt.getRow(0).getLong(1);
 		}catch(Exception ex){
@@ -866,10 +868,21 @@ public class Happy8DAO {
 		}
 	}
 	
+	public static void insertOrderDetail(long orderId,int tableId, Date date,int gameTime, String userId) throws Exception{
+		try{
+			Object []values = { orderId,userId,tableId,date,gameTime };
+			happy8DB.executeNonQuery(sqlInsertOrderDetail, values);
+		}catch(Exception ex){
+			log.error("insertOrderDetail error", ex);
+			throw ex;
+		}
+	}
+	
 	public static void deleteOrderById(long orderId) throws Exception{
 		try{
 			Object []values = { orderId };
 			happy8DB.executeNonQuery(sqlDeleteOrderById, values);
+			happy8DB.executeNonQuery(sqlDeleteOrderDetail, values);
 		}catch(Exception ex){
 			log.error("deleteOrderById error", ex);
 			throw ex;
@@ -933,7 +946,7 @@ public class Happy8DAO {
 				return;
 			
 			String userId = dt.getRow(0).getString("userid");
-			Date createDate = StringUtils.parse2Date(dt.getRow(0).getString("createdate"));
+			Date createDate = dt.getRow(0).getDateTime("createdate");
 			String signature = dt.getRow(0).getString("signature");
 			int payStatus = dt.getRow(0).getInt("paystatus");
 			
@@ -1159,6 +1172,7 @@ public class Happy8DAO {
 			if(dt.getRowCount() == 0){
 				return null;
 			}
+			args.setOrderId(dt.getRow(0).getInt("orderid"));
 			args.setStatus(dt.getRow(0).getInt("paystatus"));
 			args.setCreateDate(dt.getRow(0).getDateTime("createdate"));
 			return args;
@@ -1168,10 +1182,12 @@ public class Happy8DAO {
 		}
 	}
 	
-	public static void deleteNoPayOrder(int tableId,Date date,int gameTime) throws Exception{
-		Object []values = { tableId,date,gameTime };
+	public static void deleteNoPayOrder(int orderId) throws Exception{
+
+		Object []values = { orderId };
 		try{
 			happy8DB.executeNonQuery(sqlDeleteNoPayOrder, values);
+			happy8DB.executeNonQuery(sqlDeleteOrderDetail, values);
 		}catch(Exception ex){
 			log.error("deleteNoPayOrder error", ex);
 			throw ex;

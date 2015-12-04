@@ -1,32 +1,25 @@
 package com.happy8.args;
 
+import java.util.List;
+
 public class OrderTableReqArgs {
-	private String userId;
-	private int tableId;
-	private String date;
-	private int gameTime;
-	public String getUserId() {
-		return userId;
+	private List<OrderDetailItem> detail;
+	private double amount;
+	
+
+	public double getAmount() {
+		return amount;
 	}
-	public void setUserId(String userId) {
-		this.userId = userId;
+
+	public void setAmount(double amount) {
+		this.amount = amount;
 	}
-	public int getTableId() {
-		return tableId;
+
+	public List<OrderDetailItem> getDetail() {
+		return detail;
 	}
-	public void setTableId(int tableId) {
-		this.tableId = tableId;
-	}
-	public String getDate() {
-		return date;
-	}
-	public void setDate(String date) {
-		this.date = date;
-	}
-	public int getGameTime() {
-		return gameTime;
-	}
-	public void setGameTime(int gameTime) {
-		this.gameTime = gameTime;
+
+	public void setDetail(List<OrderDetailItem> detail) {
+		this.detail = detail;
 	}
 }

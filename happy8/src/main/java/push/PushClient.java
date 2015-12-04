@@ -55,7 +55,7 @@ public class PushClient {
         if (status == 200) {
             System.out.println("Notification sent successfully.");
         } else {
-        	log.error("Failed to send the notification!");
+        	log.error("Failed to send the notification! status: " + status);
         }
         return true;
     }

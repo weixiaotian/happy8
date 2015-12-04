@@ -14,9 +14,12 @@ import com.happy8.app.coupon.AddCouponServlet;
 import com.happy8.args.AddCouponReqArgs;
 import com.happy8.args.AddCouponRspArgs;
 import com.happy8.args.ApproveClubReqArgs;
+import com.happy8.args.ClubItem;
 import com.happy8.dao.Happy8DAO;
 import com.happy8.utils.HttpTools;
 import com.happy8.utils.StringUtils;
+
+import push.PushHelper;
 
 public class ApproveClubServlet extends HttpServlet{
 	private static Logger log = LoggerFactory.getLogger(ApproveClubServlet.class);
@@ -64,6 +67,18 @@ public class ApproveClubServlet extends HttpServlet{
 			}
 			log.info(String.format("clubid:%s action:%s", args.getUserId(),args.getAction()));
 			Happy8DAO.updateClubStatus(args.getClubId(), args.getAction());
+			ClubItem item = Happy8DAO.getClubItem(args.getClubId());
+			if(item!=null){
+				String pushToken = Happy8DAO.getUserPushToken(item.getOwnerId());
+				if(!StringUtils.isNullOrEmpty(pushToken)){
+					String title = args.getAction() == 1 ? "hi 亲，乐吧管理员已经审核通过了您的棋牌室！" : "hi 亲，乐吧管理员审核拒绝了您的棋牌室！";
+					if(pushToken.length() > 44){
+						PushHelper.sendIOSUnicast(pushToken, title);
+					}else{
+						PushHelper.sendAndroidUnicast(pushToken, title, title, title);
+					}
+				}
+			}
 			HttpTools.sendResponseOnlyStatusCode(response, 200);
 		}catch(Exception ex){
 			log.error("ApproveClubServlet process error",ex);
