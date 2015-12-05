@@ -613,7 +613,7 @@ public class Happy8DAO {
 				item.setSale(dr.getDouble("sale"));
 				item.setPhone(dr.getString("phone"));
 				item.setClubImageUrl(dr.getString("clubimageurl"));
-				item.setClubviewurl(dr.getString("clubviewrul"));
+				item.setClubviewurl(dr.getString("clubviewurl"));
 				res.add(item);
 			}
 			return res;
@@ -641,7 +641,7 @@ public class Happy8DAO {
 				item.setPhone(dr.getString("phone"));
 				item.setSale(dr.getDouble("sale"));
 				item.setClubImageUrl(dr.getString("clubimageurl"));
-				item.setClubviewurl(dr.getString("clubviewrul"));
+				item.setClubviewurl(dr.getString("clubviewurl"));
 				res.add(item);
 			}
 			return res;
@@ -670,7 +670,7 @@ public class Happy8DAO {
 				item.setPhone(dr.getString("phone"));
 				item.setSale(dr.getDouble("sale"));
 				item.setClubImageUrl(dr.getString("clubimageurl"));
-				item.setClubviewurl(dr.getString("clubviewrul"));
+				item.setClubviewurl(dr.getString("clubviewurl"));
 				item.setStatus(dr.getInt("status"));
 				res.add(item);
 			}
@@ -707,7 +707,7 @@ public class Happy8DAO {
 				item.setPlayStyle(dr.getString("playstyle"));
 				item.setSale(dr.getDouble("sale"));
 				item.setClubImageUrl(dr.getString("clubimageurl"));
-				item.setClubviewurl(dr.getString("clubviewrul"));
+				item.setClubviewurl(dr.getString("clubviewurl"));
 				res.add(item);
 			}
 			return res;
@@ -736,7 +736,7 @@ public class Happy8DAO {
 			item.setPlayStyle(dr.getString("playstyle"));
 			item.setSale(dr.getDouble("sale"));
 			item.setClubImageUrl(dr.getString("clubimageurl"));
-			item.setClubviewurl(dr.getString("clubviewrul"));
+			item.setClubviewurl(dr.getString("clubviewurl"));
 			return item;
 
 		} catch (Exception ex) {
@@ -770,7 +770,7 @@ public class Happy8DAO {
 				item.setPlayStyle(dr.getString("playstyle"));
 				item.setSale(dr.getDouble("sale"));
 				item.setClubImageUrl(dr.getString("clubimageurl"));
-				item.setClubviewurl(dr.getString("clubviewrul"));
+				item.setClubviewurl(dr.getString("clubviewurl"));
 				res.add(item);
 			}
 			return res;
