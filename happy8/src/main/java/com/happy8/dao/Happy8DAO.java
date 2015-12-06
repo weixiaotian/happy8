@@ -69,7 +69,7 @@ public class Happy8DAO {
 	private static String sqlDeleteFriend = "delete from ha_friend where userid = ? and friendid = ?";
 	private static String sqlDeleteOrderById = "delete from ha_order where orderid = ?";
 	//private static String sqlSelectBookClubList = "select bookid,userid,clubid,tableindex,chairindex,starttime,duration from ha_bookclub where userid = ? order by bookid desc limit ?,?";
-	private static String sqlSelectOrderList = "select a.orderid,a.userid,b.tableid,b.tablename,c.clubid,c.name,a.date,a.gametime,d.paystatus from ha_orderdetail a,ha_order d,ha_table b,ha_club c where a.orderid = d.orderid and a.tableid = b.tableid and b.clubid = c.clubid and a.userid = ? and (a.paystatus = 1 or a.createdate > ?) order by a.orderid desc limit ?,?";
+	private static String sqlSelectOrderList = "select a.orderid,a.userid,b.tableid,b.tablename,c.clubid,c.name,c.clubviewurl,c.addr,c.phone,a.date,a.gametime,d.paystatus from ha_orderdetail a,ha_order d,ha_table b,ha_club c where a.orderid = d.orderid and a.tableid = b.tableid and b.clubid = c.clubid and a.userid = ? and (d.paystatus = 1 or a.createdate > ?) order by a.orderid desc limit ?,?";
 	private static String sqlSelectTablesByClubId = "select a.tableid,a.tablename,a.price,a.type,a.url from ha_table a where a.clubid = ? order by a.clubid desc limit ?,?";
 	
 	private static String sqlIsUserSuperAdimin = "select userid from ha_user where userid = ? and usertype = 4";
@@ -98,7 +98,8 @@ public class Happy8DAO {
 	private static String sqlSelectSystemNotify = "select id,title,content,sendtime from ha_systemnotify order by sendtime LIMIT ?,?";
 	private static String sqlSelectUnSendNotify = "select id,title,content,sendtime from ha_systemnotify where sendflag = 0 and sendtime < ? ";
 	private static String sqlSelectPushToken = "select pushtoken from ha_user where userid = ?";
-	 
+	private static String sqlUpdateOrderPayStatus = "update ha_order set paystats = ? where orderid = ?";
+	
 	public static void initialize() throws Exception{
 		Properties p = new Properties();
 		p.load(new FileInputStream("happy8db.properties"));
@@ -909,6 +910,9 @@ public class Happy8DAO {
 				item.setClubId(dr.getInt("clubid"));
 				item.setGameTime(dr.getInt("gametime"));
 				item.setOrderId(dr.getLong("orderid"));
+				item.setClubviewurl(dr.getString("clubviewurl"));
+				item.setPhone(dr.getString("phone"));
+				item.setAddr(dr.getString("addr"));
 				item.setTableId(dr.getInt("tableid"));
 				item.setTableName(dr.getString("tablename"));
 				item.setStatus(dr.getInt("paystatus"));
@@ -1270,6 +1274,16 @@ public class Happy8DAO {
 			happy8DB.executeNonQuery(sqlUpdateUserStatus, values);
 		}catch(Exception ex){
 			log.error("updateUserStatus error", ex);
+			throw ex;
+		}
+	}
+	
+	public static void updateOrderPayStatus(long orderId,int status) throws Exception{
+		try{
+			Object []values = { status,orderId };
+			happy8DB.executeNonQuery(sqlUpdateOrderPayStatus, values);
+		}catch(Exception ex){
+			log.error("updateOrderPayStatus error", ex);
 			throw ex;
 		}
 	}

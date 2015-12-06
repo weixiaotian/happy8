@@ -7,6 +7,9 @@ public class OrderItem {
 	private String tableName;
 	private int clubId;
 	private String clubName;
+	private String clubviewurl;
+	private String addr;
+	private String phone;
 	private String date;
 	private int gameTime;
 	private int status;
@@ -63,6 +66,24 @@ public class OrderItem {
 	}
 	public void setStatus(int status) {
 		this.status = status;
+	}
+	public String getClubviewurl() {
+		return clubviewurl;
+	}
+	public void setClubviewurl(String clubviewurl) {
+		this.clubviewurl = clubviewurl;
+	}
+	public String getAddr() {
+		return addr;
+	}
+	public void setAddr(String addr) {
+		this.addr = addr;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 	
 }
