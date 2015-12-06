@@ -14,6 +14,7 @@ import com.happy8.app.bookclub.BookClubListServlet;
 import com.happy8.app.bookclub.OrderTableServlet;
 import com.happy8.app.bookclub.CancelBookServlet;
 import com.happy8.app.bookclub.QueryTablesServlet;
+import com.happy8.app.bookclub.UpdateOrderStatusServlet;
 import com.happy8.app.club.FavoriteClubListServlet;
 import com.happy8.app.club.MyOwnClubListServlet;
 import com.happy8.app.club.NearbyClubListServlet;
@@ -159,6 +160,7 @@ public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.cl
 		context.addServlet(new ServletHolder(new DeleteSystemNotifyServlet()), "/happy8/deletesystemnotify");
 		context.addServlet(new ServletHolder(new GetSystemNotifyServlet()), "/happy8/getsystemnotify");
 		context.addServlet(new ServletHolder(new PublishSystemNotifyServlet()), "/happy8/publishsystemnotify");
+		context.addServlet(new ServletHolder(new UpdateOrderStatusServlet()), "/happy8/updateorderstatus");
 		
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(port);
