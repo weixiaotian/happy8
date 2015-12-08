@@ -12,7 +12,6 @@ public class Startup {
 			service.start();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			
 			log.error("start service error!", e);
 		}
 		log.info("service start ok!");

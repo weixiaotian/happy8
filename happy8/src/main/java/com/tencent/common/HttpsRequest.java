@@ -25,6 +25,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.XStream;
@@ -45,7 +46,7 @@ public class HttpsRequest{
 
     }
 
-    private static Log log = new Log(LoggerFactory.getLogger(HttpsRequest.class));
+    private static Logger log = LoggerFactory.getLogger(HttpsRequest.class);
 
     //表示请求器是否已经做了初始化工作
     private boolean hasInit = false;
@@ -129,9 +130,10 @@ public class HttpsRequest{
 
         //将要提交给API的数据对象转换成XML格式数据Post给API
         String postDataXML = xStreamForRequestPostData.toXML(xmlObj);
-
-        Util.log("API，POST过去的数据是：");
-        Util.log(postDataXML);
+//        postDataXML = postDataXML.replaceFirst("com.happy8.weixinpay.PayInfo", "xml");
+//        postDataXML = postDataXML.replaceFirst("/com.happy8.weixinpay.PayInfo", "/xml");
+        log.info("API，POST过去的数据是：");
+        log.info(postDataXML);
 
         //得指明使用UTF-8编码，否则到API服务器XML的中文不能被成功识别
         StringEntity postEntity = new StringEntity(postDataXML, "UTF-8");
@@ -141,7 +143,7 @@ public class HttpsRequest{
         //设置请求器的配置
         httpPost.setConfig(requestConfig);
 
-        Util.log("executing request" + httpPost.getRequestLine());
+        log.info("executing request" + httpPost.getRequestLine());
 
         try {
             HttpResponse response = httpClient.execute(httpPost);
@@ -151,16 +153,16 @@ public class HttpsRequest{
             result = EntityUtils.toString(entity, "UTF-8");
 
         } catch (ConnectionPoolTimeoutException e) {
-            log.e("http get throw ConnectionPoolTimeoutException(wait time out)");
+            log.error("http get throw ConnectionPoolTimeoutException(wait time out)");
 
         } catch (ConnectTimeoutException e) {
-            log.e("http get throw ConnectTimeoutException");
+            log.error("http get throw ConnectTimeoutException");
 
         } catch (SocketTimeoutException e) {
-            log.e("http get throw SocketTimeoutException");
+            log.error("http get throw SocketTimeoutException");
 
         } catch (Exception e) {
-            log.e("http get throw Exception");
+            log.error("http get throw Exception");
 
         } finally {
             httpPost.abort();

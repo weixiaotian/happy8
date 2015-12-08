@@ -56,6 +56,7 @@ import com.happy8.app.user.ResetPasswordServlet;
 import com.happy8.app.user.UpdateUserInfoServlet;
 import com.happy8.app.user.UserLoginServlet;
 import com.happy8.dao.Happy8DAO;
+import com.happy8.utils.Happy8Config;
 
 public class Happy8HttpService {
 public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.class);
@@ -63,10 +64,11 @@ public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.cl
 	public void start() throws Exception {
 		// TODO Auto-generated method stub
 		try{
+			init();
 			if(LOGGER.isInfoEnabled()){
 				LOGGER.info("HttpService initializing");
 			}
-			init();
+			Happy8Config.init();
 			intWebService();
 			SystemNotifySender.start();
 			if(LOGGER.isInfoEnabled()){
@@ -94,7 +96,7 @@ public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.cl
 	
 	private void intWebService()throws Exception{
 		//int port = ServiceSettings.INSTANCE.getServicePort("web_http");
-		int port=8080;
+		int port=Happy8Config.Port;
 		Server server = new Server(port);
 		QueuedThreadPool threadPool = new QueuedThreadPool();
 		threadPool.setMaxThreads(250);
