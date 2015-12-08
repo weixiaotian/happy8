@@ -74,8 +74,10 @@ public class HttpsRequest{
         try {
             keyStore.load(instream, Configure.getCertPassword().toCharArray());//设置证书密码
         } catch (CertificateException e) {
+        	log.error("file error",e);
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
+        	log.error("file error",e);
             e.printStackTrace();
         } finally {
             instream.close();
@@ -151,7 +153,7 @@ public class HttpsRequest{
             HttpEntity entity = response.getEntity();
 
             result = EntityUtils.toString(entity, "UTF-8");
-
+            log.info(result);
         } catch (ConnectionPoolTimeoutException e) {
             log.error("http get throw ConnectionPoolTimeoutException(wait time out)");
 

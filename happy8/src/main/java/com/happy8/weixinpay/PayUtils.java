@@ -31,20 +31,20 @@ public class PayUtils {
 	 * @return
 	 * @throws Exception 
 	 */
-	 public static PayInfo createPayInfo(OrderTableReqArgs order,long orderId,String ip) throws Exception {
+	 public static PayInfo createPayInfo(OrderTableReqArgs order,long orderId) throws Exception {
 		  PayInfo payInfo = new PayInfo();
 		  payInfo.setAppid(Configure.getAppid());
 		  payInfo.setDevice_info("WEB");
 		  payInfo.setMch_id(Configure.getMchid());
 		  payInfo.setNonce_str(create_nonce_str().replace("-", ""));
-		  payInfo.setBody("happy8 订单 " + orderId);
+		  payInfo.setBody("happy8 " + orderId);
 		  payInfo.setAttach(String.valueOf(orderId));
 		  payInfo.setOut_trade_no(String.valueOf(orderId));
 		  payInfo.setTotal_fee((int)(order.getAmount() * 100));//元转分
-		  payInfo.setSpbill_create_ip(ip);
+		  payInfo.setSpbill_create_ip("192.168.31.214");
 		  payInfo.setNotify_url("http://www.weixin.qq.com/wxpay/pay.php");
 		  payInfo.setTrade_type("APP");
-		  payInfo.setSign(getSign(payInfo));
+		  payInfo.setSign(Signature.getSign(payInfo));
 		  //payInfo.setOpenid(openId);
 		  return payInfo;
 	 }
@@ -54,33 +54,6 @@ public class PayUtils {
 		 String resStr = req.sendPost(Configure.UNIFIED_ORDER, payInfo);
 		 return XMLParser.getMapFromXML(resStr);
 	 }
-	 
-	 /**
-	  * 获取签名
-	  * @param payInfo
-	  * @return
-	  * @throws Exception
-	  */
-	  private static String getSign(PayInfo payInfo) throws Exception {
-		   String signTemp = "appid="+payInfo.getAppid()
-		    +"&attach="+payInfo.getAttach()
-		    +"&body="+payInfo.getBody()
-		    +"&device_info="+payInfo.getDevice_info()
-		    +"&mch_id="+payInfo.getMch_id()
-		    +"&nonce_str="+payInfo.getNonce_str()
-		    +"&notify_url="+payInfo.getNotify_url()
-		    +"&openid="+payInfo.getOpenid()
-		    +"&out_trade_no="+payInfo.getOut_trade_no()
-		    +"&spbill_create_ip="+payInfo.getSpbill_create_ip()
-		    +"&total_fee="+payInfo.getTotal_fee()
-		    +"&trade_type="+payInfo.getTrade_type()
-		    +"&key="+Configure.getKey(); //这个key注意
-		  MessageDigest md = MessageDigest.getInstance("MD5");
-		  md.reset();
-		  md.update(signTemp.getBytes("UTF-8"));
-		  String sign = StringUtils.parseByte2HexStr(md.digest()).toUpperCase();
-		  return sign;
-	  }
 	  
 	  
 	  /**
@@ -111,7 +84,7 @@ public class PayUtils {
 		  try{
 			  OrderTableReqArgs order = new OrderTableReqArgs();
 			  order.setAmount(100);
-			  PayInfo payInfo = createPayInfo(order, 124, getIpAddr());
+			  PayInfo payInfo = createPayInfo(order, 124);
 			  Map<String,Object> res = postOrder(payInfo);
 			  String code = String.valueOf(res.get("return_code"));
 			  String err_code = String.valueOf(res.get("err_code"));

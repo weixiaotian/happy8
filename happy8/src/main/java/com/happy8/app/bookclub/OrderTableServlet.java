@@ -1,6 +1,7 @@
 package com.happy8.app.bookclub;
 
 import java.util.Date;
+import java.util.Map;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +20,8 @@ import com.happy8.args.OrderTableRspArgs;
 import com.happy8.dao.Happy8DAO;
 import com.happy8.utils.HttpTools;
 import com.happy8.utils.StringUtils;
+import com.happy8.weixinpay.PayInfo;
+import com.happy8.weixinpay.PayUtils;
 
 public class OrderTableServlet extends HttpServlet{
 	private static Logger log = LoggerFactory.getLogger(OrderTableServlet.class);
@@ -99,6 +102,18 @@ public class OrderTableServlet extends HttpServlet{
 			OrderTableRspArgs resArgs = new OrderTableRspArgs();
 			resArgs.setCurrentTime(StringUtils.Date2String(now));
 			resArgs.setOrderId(res);
+			PayInfo payInfo = PayUtils.createPayInfo(args, res);
+			Map<String, Object> payRes = PayUtils.postOrder(payInfo);
+			String code = String.valueOf(payRes.get("return_code"));
+			String trade_type = String.valueOf(payRes.get("trade_type"));
+			String prepay_id = String.valueOf(payRes.get("prepay_id"));
+			if(!code.equals("SUCCESS")){
+				log.error("weixin pay error");
+				HttpTools.sendResponseOnlyStatusCode(response, 406);
+				return;
+			}
+			resArgs.setPrepay_id(prepay_id);
+			resArgs.setTrade_type(trade_type);
 			HttpTools.sendOkResponse(response, JSON.toJSONString(resArgs,SerializerFeature.WriteMapNullValue,SerializerFeature.WriteNullStringAsEmpty));
 		}catch(Exception ex){
 			log.error("OrderTableServlet process error",ex);

@@ -26,7 +26,7 @@ public class Configure {
 	private static String certLocalPath = "apiclient_cert.p12";
 
 	//HTTPS证书密码，默认密码等于商户号MCHID
-	private static String certPassword = "1291824701";
+	private static String certPassword = "1293958801";
 
 	//是否使用异步线程的方式来上报API测速，默认为异步模式
 	private static boolean useThreadToDoReport = true;
