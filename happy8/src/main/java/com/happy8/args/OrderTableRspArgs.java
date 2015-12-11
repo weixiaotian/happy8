@@ -5,6 +5,7 @@ public class OrderTableRspArgs {
 	private String currentTime;
 	private String prepay_id;
 	private String trade_type;
+	private String nonce_str;
 	
 	public long getOrderId() {
 		return orderId;
@@ -36,5 +37,13 @@ public class OrderTableRspArgs {
 
 	public void setTrade_type(String trade_type) {
 		this.trade_type = trade_type;
+	}
+
+	public String getNonce_str() {
+		return nonce_str;
+	}
+
+	public void setNonce_str(String nonce_str) {
+		this.nonce_str = nonce_str;
 	}
 }
