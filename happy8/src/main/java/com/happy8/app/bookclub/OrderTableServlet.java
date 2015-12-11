@@ -107,6 +107,7 @@ public class OrderTableServlet extends HttpServlet{
 			String code = String.valueOf(payRes.get("return_code"));
 			String trade_type = String.valueOf(payRes.get("trade_type"));
 			String prepay_id = String.valueOf(payRes.get("prepay_id"));
+			String nonce_str = String.valueOf(payRes.get("nonce_str"));
 			if(!code.equals("SUCCESS")){
 				log.error("weixin pay error");
 				HttpTools.sendResponseOnlyStatusCode(response, 406);
@@ -114,6 +115,7 @@ public class OrderTableServlet extends HttpServlet{
 			}
 			resArgs.setPrepay_id(prepay_id);
 			resArgs.setTrade_type(trade_type);
+			resArgs.setNonce_str(nonce_str);
 			HttpTools.sendOkResponse(response, JSON.toJSONString(resArgs,SerializerFeature.WriteMapNullValue,SerializerFeature.WriteNullStringAsEmpty));
 		}catch(Exception ex){
 			log.error("OrderTableServlet process error",ex);
