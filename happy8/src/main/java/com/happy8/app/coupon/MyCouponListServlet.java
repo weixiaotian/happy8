@@ -47,7 +47,7 @@ public class MyCouponListServlet extends HttpServlet{
 			}
 			List<CouponItem> res = null;
 			if(index == 0){
-				res = Happy8DAO.getAllMyCouponList(userId, start, end);
+				res = Happy8DAO.getAllMyCouponList(start, end);
 			}else if(index == 1){
 				res = Happy8DAO.getUnConsumeCouponList(start, end);
 			}else if(index == 2){

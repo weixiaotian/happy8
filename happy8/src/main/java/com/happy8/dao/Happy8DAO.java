@@ -1026,11 +1026,11 @@ public class Happy8DAO {
 		}
 	}
 	
-	public static List<CouponItem> getAllMyCouponList(String userId,int start,int end) throws Exception{
+	public static List<CouponItem> getAllMyCouponList(int start,int end) throws Exception{
 		try{
 			List<CouponItem> res = new ArrayList<CouponItem>();
 			int count = end - start;
-			Object []values = {userId,start,count};
+			Object []values = {start,count};
 			DataTable dt = happy8DB.executeTable(sqlSelectMyCouponList, values);
 			for(DataRow dr : dt.getRows()){
 				CouponItem item = new CouponItem();
