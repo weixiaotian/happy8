@@ -78,7 +78,7 @@ public class Happy8DAO {
 	private static String sqlDeleteCoupon= "delete from ha_coupon where couponid = ?";
 	private static String sqlSelectConsumeCouponList = "SELECT a.couponid,a.type,a.discount,a.value,a.startamout,b.consumecouponid FROM ha_coupon a LEFT JOIN ha_usercoupon b ON a.`couponid` = b.`consumecouponid` WHERE  b.userid = ? ORDER BY a.id DESC LIMIT ?,?";
 	private static String sqlSelectUnConsumeCouponList = "select couponid,type,discount,value,startamout from ha_coupon where expiretime > ? ORDER BY id DESC LIMIT ?,?";
-	private static String sqlSelectMyCouponList= "select a.couponid,a.type,a.discount,a.value,a.startamout from ha_coupon a,ha_usercoupon b where a.`couponid` = b.`consumecouponid`  ORDER BY a.id DESC LIMIT ?,? ";
+	private static String sqlSelectMyCouponList= "SELECT a.couponid,a.type,a.discount,a.value,a.startamout,b.consumecouponid FROM ha_coupon a LEFT JOIN ha_usercoupon b ON a.`couponid` = b.`consumecouponid` ORDER BY a.id DESC LIMIT ?,? ";
 	private static String sqlUpdateClubStatus = "UPDATE ha_club SET status = ? WHERE clubid = ?";
 	private static String sqlDeleteFindBuddyInfo = "delete from ha_findbuddyinfo where bdinfoid = ?";
 	private static String sqlDeleteFindBuddyReplayAllOne = "delete from ha_findbuddycomment where bdinfoid = ?";
