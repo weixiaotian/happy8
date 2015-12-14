@@ -23,6 +23,8 @@ import com.tencent.common.Signature;
 import com.tencent.common.XMLParser;
 
 public class PayUtils {
+	private static String orderDesc = "棋牌室预定订单";
+	
 	/**
 	 * 创建统一下单的xml的java对象
 	 * @param bizOrder 系统中的业务单号
@@ -37,7 +39,7 @@ public class PayUtils {
 		  payInfo.setDevice_info("WEB");
 		  payInfo.setMch_id(Configure.getMchid());
 		  payInfo.setNonce_str(create_nonce_str().replace("-", ""));
-		  payInfo.setBody("happy8 " + orderId);
+		  payInfo.setBody(orderDesc);
 		  payInfo.setAttach(String.valueOf(orderId));
 		  payInfo.setOut_trade_no(String.valueOf(orderId));
 		  payInfo.setTotal_fee((int)(order.getAmount() * 100));//元转分
