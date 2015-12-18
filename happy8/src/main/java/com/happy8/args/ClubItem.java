@@ -17,6 +17,7 @@ public class ClubItem {
 	private String clubImageUrl;
 	private String clubviewurl;
 	private int status;
+	private boolean isMyFavorite = false;
 	
 	public int getClubId() {
 		return clubId;
@@ -90,5 +91,10 @@ public class ClubItem {
 	public void setClubviewurl(String clubviewurl) {
 		this.clubviewurl = clubviewurl;
 	}
-	
+	public boolean isMyFavorite() {
+		return isMyFavorite;
+	}
+	public void setMyFavorite(boolean isMyFavorite) {
+		this.isMyFavorite = isMyFavorite;
+	}
 }

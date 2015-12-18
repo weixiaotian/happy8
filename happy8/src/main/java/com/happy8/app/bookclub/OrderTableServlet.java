@@ -85,7 +85,7 @@ public class OrderTableServlet extends HttpServlet{
 				
 				if(check!=null){
 					if(now.getTime() - check.getCreateDate().getTime() < 15 * 60 * 1000){
-						log.error(String.format("table is order no pay createdate%%s now:%", check.getCreateDate(),now));
+						log.error(String.format("table is order no pay createdate %s now:%s", check.getCreateDate(),now));
 						HttpTools.sendResponseOnlyStatusCode(response, 406);
 						return;
 					}

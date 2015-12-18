@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -22,11 +23,13 @@ import tian.database.DatabaseManager;
 
 import com.happy8.app.findbuddy.CheckOrderItem;
 import com.happy8.args.BookClubItem;
+import com.happy8.args.CarouselArgs;
 import com.happy8.args.ClubItem;
 import com.happy8.args.CouponItem;
 import com.happy8.args.FindBuddyCommentInfo;
 import com.happy8.args.FindBuddyInfoItem;
 import com.happy8.args.OrderItem;
+import com.happy8.args.OrderStatusAmount;
 import com.happy8.args.QueryTableItem;
 import com.happy8.args.SystemNotifyItem;
 import com.happy8.args.TimeLineCommentInfoItem;
@@ -57,6 +60,7 @@ public class Happy8DAO {
 	private static String sqlInsertFavoriteClub = "insert into ha_userfavoriteclub(userid,clubid) values(?,?)";
 	private static String sqlDeleteFavoriteClub = "delete from ha_userfavoriteclub where userid = ? and clubid = ?";
 	private static String sqlSelectFavoriteClubList = "select b.clubid,b.ownerid,b.name,b.addr,b.sale,b.phone,b.playstyle,b.longitude,b.status,b.latitude,b.clubimageurl,b.clubviewurl from ha_userfavoriteclub a,ha_club b where a.userid = ? and a.clubid = b.clubid order by a.clubid desc limit ?,?";
+	private static String sqlSelectFavoriteClubIdList = "select a.clubid from ha_userfavoriteclub a where a.userid = ?";
 	private static String sqlSelectUnApproveClubList = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,clubimageurl,clubviewurl from ha_club where status = 0 order by clubid desc limit ?,?";
 	private static String sqlQueryClubListByTel = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,status,clubimageurl,clubviewurl from ha_club where phone like ? and status = 1 order by clubid desc limit ?,?";
 	private static String sqlSelectMyOwnClubList = "select clubid,ownerid,name,addr,sale,phone,playstyle,longitude,latitude,status,clubimageurl,clubviewurl,status from ha_club where ownerid = ? order by clubid desc limit ?,?";
@@ -91,14 +95,16 @@ public class Happy8DAO {
 	private static String sqlUpdateUserStatus = "update ha_user set userstatus = ?,pushtoken = ? where userid = ?";
 	private static String sqlDeleteTable = "delete from ha_table where tableid = ?";
 	private static String sqlSelectOrderByDate = "select a.orderid, a.paystatus,a.createdate from ha_order a,ha_orderdetail b where a.orderid = b.orderid and  b.tableid = ? and b.date = ? and b.gametime = ?";
+	private static String sqlSelectOrderById = "select a.orderid, a.paystatus,a.amount from ha_order a where a.orderid = ?";
 	private static String sqlDeleteNoPayOrder = "delete from ha_order where orderid = ?";
 	private static String sqlInsertOrderDetail = "insert into ha_orderdetail(orderid,userid,tableid,date,gametime) values(?,?,?,?,?)";
 	private static String sqlDeleteOrderDetail = "delete from ha_orderdetail where orderid = ?";
 	private static String sqlSelectOrderStatus = "select a.userid,a.createdate,c.paystatus,b.signature from ha_orderdetail a, ha_order c,ha_user b where a.orderid = c.orderid and a.userid = b.userid and a.tableid = ? and date = ? and gametime = ?";
-	private static String sqlSelectSystemNotify = "select id,title,content,sendtime from ha_systemnotify order by sendtime LIMIT ?,?";
+	private static String sqlSelectSystemNotify = "select id,title,content,sendtime from ha_systemnotify order by sendtime DESC LIMIT ?,?";
 	private static String sqlSelectUnSendNotify = "select id,title,content,sendtime from ha_systemnotify where sendflag = 0 and sendtime < ? ";
 	private static String sqlSelectPushToken = "select pushtoken from ha_user where userid = ?";
-	private static String sqlUpdateOrderPayStatus = "update ha_order set paystats = ? where orderid = ?";
+	private static String sqlUpdateOrderPayStatus = "update ha_order set paystatus = ?,createdate = CURRENT_TIMESTAMP where orderid = ?";
+	private static String sqlSelectCarousel = "select id,path from ha_carousel";
 	
 	public static void initialize() throws Exception{
 		Properties p = new Properties();
@@ -615,6 +621,7 @@ public class Happy8DAO {
 				item.setPhone(dr.getString("phone"));
 				item.setClubImageUrl(dr.getString("clubimageurl"));
 				item.setClubviewurl(dr.getString("clubviewurl"));
+				item.setMyFavorite(true);
 				res.add(item);
 			}
 			return res;
@@ -1192,6 +1199,23 @@ public class Happy8DAO {
 		}
 	}
 	
+	public static OrderStatusAmount getOrderAmountAndStatus(long orderId) throws Exception{
+		try{
+			Object []values = { orderId };
+			DataTable dt = happy8DB.executeTable(sqlSelectOrderById, values);
+			if(dt.getRowCount() == 0){
+				return null;
+			}
+			OrderStatusAmount res = new OrderStatusAmount();
+			res.setAmount(dt.getRow(0).getDouble("amount"));
+			res.setPayStatus(dt.getRow(0).getInt("paystatus"));
+			return res;
+		}catch(Exception ex){
+			log.error("getOrderAmount error", ex);
+			throw ex;
+		}
+	}
+	
 	public static void deleteNoPayOrder(int orderId) throws Exception{
 
 		Object []values = { orderId };
@@ -1212,6 +1236,24 @@ public class Happy8DAO {
 			return dt.getRow(0).getLong(1);
 		}catch(Exception ex){
 			log.error("insertOrder error", ex);
+			throw ex;
+		}
+	}
+	
+	public static List<CarouselArgs> getCarouselList() throws Exception{
+		try{
+			List<CarouselArgs> res = new ArrayList<CarouselArgs>();
+			Object []values = {};
+			DataTable dt = happy8DB.executeTable(sqlSelectCarousel, values);
+			for(DataRow dr : dt.getRows()){
+				CarouselArgs item = new CarouselArgs();
+				item.setId(dr.getInt("id"));
+				item.setPath(dr.getString("path"));
+				res.add(item);
+			}
+			return res;
+		}catch(Exception ex){
+			log.error("getCarouselList error", ex);
 			throw ex;
 		}
 	}
@@ -1274,6 +1316,21 @@ public class Happy8DAO {
 			happy8DB.executeNonQuery(sqlUpdateUserStatus, values);
 		}catch(Exception ex){
 			log.error("updateUserStatus error", ex);
+			throw ex;
+		}
+	}
+	
+	public static HashSet<Integer> getFavoriteClubIds(String userId) throws Exception{
+		try{
+			Object []values = { userId };
+			HashSet<Integer> res = new HashSet<Integer>();
+			DataTable dt = happy8DB.executeTable(sqlSelectFavoriteClubIdList, values);
+			for(DataRow dr : dt.getRows()){
+				res.add(dr.getInt("clubid"));
+			}
+			return res;
+		}catch(Exception ex){
+			log.error("getFavoriteClubIds error", ex);
 			throw ex;
 		}
 	}

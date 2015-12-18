@@ -48,6 +48,7 @@ import com.happy8.app.timeline.DeleteTimeLineServlet;
 import com.happy8.app.timeline.ReplayTimeLineServlet;
 import com.happy8.app.timeline.TimeLineInfoListServlet;
 import com.happy8.app.timeline.TimeLineInfoServlet;
+import com.happy8.app.user.GetCarouselServlet;
 import com.happy8.app.user.GetUserInfoServlet;
 import com.happy8.app.user.LogoutServlet;
 import com.happy8.app.user.QueryUserLevelServlet;
@@ -164,6 +165,7 @@ public static final Logger LOGGER = LoggerFactory.getLogger(Happy8HttpService.cl
 		context.addServlet(new ServletHolder(new PublishSystemNotifyServlet()), "/happy8/publishsystemnotify");
 		context.addServlet(new ServletHolder(new UpdateOrderStatusServlet()), "/happy8/updateorderstatus");
 		
+		context.addServlet(new ServletHolder(new GetCarouselServlet()), "/happy8/getcarousel");
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(port);
 		connector.setAcceptors(4);

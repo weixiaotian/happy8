@@ -56,7 +56,13 @@ public class PayUtils {
 		 String resStr = req.sendPost(Configure.UNIFIED_ORDER, payInfo);
 		 return XMLParser.getMapFromXML(resStr);
 	 }
-	  
+	 
+	 public static Map<String,Object> postRefundOrder(long orderId,int totalFee) throws UnrecoverableKeyException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException, IOException, ParserConfigurationException, SAXException{
+		 HttpsRequest req = new HttpsRequest();
+		 RefundReqData data = new RefundReqData("", String.valueOf(orderId),"WEB",String.valueOf(orderId),totalFee,totalFee,Configure.getMchid(),"CNY");
+		 String resStr = req.sendPost(Configure.REFUND_API, data);
+		 return XMLParser.getMapFromXML(resStr);
+	 }
 	  
 	  /**
 	  * 获取ip地址
@@ -84,10 +90,10 @@ public class PayUtils {
 	  
 	  public static void main(String[] args) {
 		  try{
-			  OrderTableReqArgs order = new OrderTableReqArgs();
-			  order.setAmount(100);
-			  PayInfo payInfo = createPayInfo(order, 124);
-			  Map<String,Object> res = postOrder(payInfo);
+			  //OrderTableReqArgs order = new OrderTableReqArgs();
+			  //order.setAmount(100);
+			  //PayInfo payInfo = createPayInfo(order, 124);
+			  Map<String,Object> res = postRefundOrder(136, 200);
 			  String code = String.valueOf(res.get("return_code"));
 			  String err_code = String.valueOf(res.get("err_code"));
 			  String trade_type = String.valueOf(res.get("trade_type"));

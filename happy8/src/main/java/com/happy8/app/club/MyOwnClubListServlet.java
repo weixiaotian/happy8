@@ -1,5 +1,6 @@
 package com.happy8.app.club;
 
+import java.util.HashSet;
 import java.util.List;
 
 import javax.servlet.http.HttpServlet;
@@ -43,7 +44,14 @@ public class MyOwnClubListServlet extends HttpServlet{
 			}
 			
 			List<ClubItem> res = Happy8DAO.getMyOwnClubList(userId, start, end);
-			
+			HashSet<Integer> favList = Happy8DAO.getFavoriteClubIds(userId);
+			if(favList.size() >0){
+				for (ClubItem item : res) {
+					if(favList.contains(item.getClubId())){
+						item.setMyFavorite(true);
+					}
+				}
+			}
 			HttpTools.sendOkResponse(response, JSON.toJSONString(res,SerializerFeature.WriteMapNullValue,SerializerFeature.WriteNullStringAsEmpty));
 		}catch(Exception ex){
 			log.error("MyOwnClubListServlet process error",ex);

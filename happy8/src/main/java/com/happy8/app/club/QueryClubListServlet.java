@@ -1,5 +1,6 @@
 package com.happy8.app.club;
 
+import java.util.HashSet;
 import java.util.List;
 
 import javax.servlet.http.HttpServlet;
@@ -44,6 +45,13 @@ public class QueryClubListServlet extends HttpServlet{
 				return;
 			}
 			
+			String userId = request.getParameter("userid");
+			if(StringUtils.isNullOrEmpty(userId)){
+				log.error("userid is null ");
+				HttpTools.sendResponseOnlyStatusCode(response, 400);
+				return;
+			}
+			
 			if(!type.equals("tel") && !type.equals("addr")){
 				log.error("error type :" + type);
 				HttpTools.sendResponseOnlyStatusCode(response, 400);
@@ -52,6 +60,14 @@ public class QueryClubListServlet extends HttpServlet{
 			
 			List<ClubItem> res = Happy8DAO.queryClubList(index, type, start, end);
 			
+			HashSet<Integer> favList = Happy8DAO.getFavoriteClubIds(userId);
+			if(favList.size() >0){
+				for (ClubItem item : res) {
+					if(favList.contains(item.getClubId())){
+						item.setMyFavorite(true);
+					}
+				}
+			}
 			HttpTools.sendOkResponse(response, JSON.toJSONString(res,SerializerFeature.WriteMapNullValue,SerializerFeature.WriteNullStringAsEmpty));
 		}catch(Exception ex){
 			log.error("QueryClubListServlet process error",ex);

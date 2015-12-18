@@ -1,5 +1,6 @@
 package com.happy8.app.club;
 
+import java.util.HashSet;
 import java.util.List;
 
 import javax.servlet.http.HttpServlet;
@@ -48,6 +49,12 @@ public class NearbyClubListServlet extends HttpServlet{
 				HttpTools.sendResponseOnlyStatusCode(response, 400);
 				return;
 			}
+			String userId = request.getParameter("userid");
+			if(StringUtils.isNullOrEmpty(userId)){
+				log.error("userid is null ");
+				HttpTools.sendResponseOnlyStatusCode(response, 400);
+				return;
+			}
 			int geoHashCount = 0;
 			if(index.equals("1")){
 				geoHashCount = 7;
@@ -66,7 +73,14 @@ public class NearbyClubListServlet extends HttpServlet{
 			String []adjAndCode = geoHash.getAdjacentToString(geoHashCode);
 			
 			List<ClubItem> res = Happy8DAO.getNearByClubList(adjAndCode, start, end);
-			
+			HashSet<Integer> favList = Happy8DAO.getFavoriteClubIds(userId);
+			if(favList.size() >0){
+				for (ClubItem item : res) {
+					if(favList.contains(item.getClubId())){
+						item.setMyFavorite(true);
+					}
+				}
+			}
 			
 			HttpTools.sendOkResponse(response, JSON.toJSONString(res,SerializerFeature.WriteMapNullValue,SerializerFeature.WriteNullStringAsEmpty));
 		}catch(Exception ex){
