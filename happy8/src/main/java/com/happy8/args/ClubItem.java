@@ -16,6 +16,7 @@ public class ClubItem {
 	private double latitude;
 	private String clubImageUrl;
 	private String clubviewurl;
+	private String city;
 	private int status;
 	private boolean isMyFavorite = false;
 	
@@ -97,4 +98,11 @@ public class ClubItem {
 	public void setMyFavorite(boolean isMyFavorite) {
 		this.isMyFavorite = isMyFavorite;
 	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	
 }

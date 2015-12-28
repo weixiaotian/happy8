@@ -43,25 +43,42 @@ public class NearbyClubListServlet extends HttpServlet{
 				return;
 			}
 			
-			String index = request.getParameter("index");
-			if(StringUtils.isNullOrEmpty(index)){
-				log.error("index is null ");
-				HttpTools.sendResponseOnlyStatusCode(response, 400);
-				return;
-			}
+			
 			String userId = request.getParameter("userid");
 			if(StringUtils.isNullOrEmpty(userId)){
 				log.error("userid is null ");
 				HttpTools.sendResponseOnlyStatusCode(response, 400);
 				return;
 			}
+			
+			String city = request.getParameter("city");
+			if(!StringUtils.isNullOrEmpty(city)){
+				List<ClubItem> res = Happy8DAO.getClubListByCity(city, start, end);
+				HashSet<Integer> favList = Happy8DAO.getFavoriteClubIds(userId);
+				if(favList.size() >0){
+					for (ClubItem item : res) {
+						if(favList.contains(item.getClubId())){
+							item.setMyFavorite(true);
+						}
+					}
+				}
+				
+				HttpTools.sendOkResponse(response, JSON.toJSONString(res,SerializerFeature.WriteMapNullValue,SerializerFeature.WriteNullStringAsEmpty));
+				return;
+			}
+			
+			String index = request.getParameter("index");
+			if(StringUtils.isNullOrEmpty(index)){
+				log.error("city and index is null ");
+				HttpTools.sendResponseOnlyStatusCode(response, 400);
+				return;
+			}
+			
 			int geoHashCount = 0;
 			if(index.equals("1")){
-				geoHashCount = 7;
+				geoHashCount = 5; // 5公里
 			}else if(index.equals("2")){
-				geoHashCount = 6;
-			}else if(index.equals("3")){
-				geoHashCount = 5;
+				geoHashCount = 4; // 20公里
 			}else{
 				log.error("index is null ");
 				HttpTools.sendResponseOnlyStatusCode(response, 400);

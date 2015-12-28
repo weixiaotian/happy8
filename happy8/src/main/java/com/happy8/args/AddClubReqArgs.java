@@ -15,6 +15,7 @@ public class AddClubReqArgs {
 	private double latitude;
 	private String clubImageUrl;
 	private String clubviewurl;
+	private String city;
 	
 	public String getName() {
 		return name;
@@ -75,5 +76,11 @@ public class AddClubReqArgs {
 	}
 	public void setClubviewurl(String clubviewurl) {
 		this.clubviewurl = clubviewurl;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
 	}
 }

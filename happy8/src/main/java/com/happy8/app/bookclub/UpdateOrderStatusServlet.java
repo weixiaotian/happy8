@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.happy8.args.OrderStatusAmount;
 import com.happy8.args.UpdateOrderStatusItem;
 import com.happy8.args.UpdateOrderStatusReqArgs;
 import com.happy8.dao.Happy8DAO;
@@ -51,6 +52,14 @@ public class UpdateOrderStatusServlet extends HttpServlet{
 			UpdateOrderStatusItem reqItem = TokenUtils.parseToken(token);
 			if(reqItem == null){
 				HttpTools.sendResponseOnlyStatusCode(response, 401);
+				return;
+			}
+			
+			OrderStatusAmount orderStatus = Happy8DAO.getOrderAmountAndStatus(reqItem.getOrderId());
+			
+			if(reqItem.getStatus() - orderStatus.getPayStatus() != 1){
+				log.error(String.format("req update status error,req status is %s now status is %s", reqItem.getStatus(),orderStatus.getPayStatus()));
+				HttpTools.sendResponseOnlyStatusCode(response, 405);
 				return;
 			}
 			Happy8DAO.updateOrderPayStatus(reqItem.getOrderId(), reqItem.getStatus());
